@@ -4,7 +4,7 @@ import React from 'react';
 const LandingPage = () => {
   return (
     <View>
-      <Text>Hello</Text>
+      <Text>Landing Page</Text>
     </View>
   );
 };
