@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import logo from '../assets/images/Logo3.png';
 
 const SignInPage = () => {
   return (
@@ -12,6 +14,7 @@ const SignInPage = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
+        <Image source={logo} style={styles.logo} />
           <Text style={styles.title}>Sign In</Text>
         </View>
 
@@ -72,10 +75,16 @@ const styles = StyleSheet.create({
     paddingRight: 3,
   },
   headerContainer: {
-    marginTop: '50%',
+    marginTop: '20%',
     marginBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+  },
+  logo: {
+    width: '55%',
+    height: 50,
+    marginBottom: 40,
   },
   title: {
     fontSize: 40,
@@ -94,7 +103,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowRadius: 20,
+    shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
   welcomeText: {
