@@ -1,17 +1,24 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 // Replace with your actual logo
 import logo from '../assets/images/Logo2.png';
-import backgroundImage from '../assets/images/HomeBG.png'
+import backgroundImage from '../assets/images/HomeBG.png';
 
 const LandingPage = () => {
+  const router = useRouter();
+
+  const handleSignIn = () => {
+    router.push('/signIn');
+  };
+
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
       <View style={styles.container}>
         <Image source={logo} style={styles.logo} />
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
           <LinearGradient
             colors={['#007B70', '#00E1CD']}
             start={[0, 0]}
@@ -27,7 +34,6 @@ const LandingPage = () => {
             <Text style={styles.signUpText}> Sign Up</Text>
           </TouchableOpacity>
         </View>
-        
       </View>
     </ImageBackground>
   );
