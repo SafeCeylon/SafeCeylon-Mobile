@@ -19,6 +19,10 @@ const SignInPage = () => {
     Alert.alert('Success', 'Signed in successfully!');
   };
 
+  const handleForgot = () => {
+    router.push('/forgotPw');
+  };
+
   return (
     <LinearGradient
       colors={['#007B70', '#00E1CD']}
@@ -55,14 +59,15 @@ const SignInPage = () => {
             accessibilityLabel="Password"
           />
           <View style={styles.row}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={styles.checkboxContainer}
               onPress={() => setRememberMe(!rememberMe)}
               accessibilityLabel="Remember Me"
             >
+              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]} />
               <Text style={styles.checkboxText}>Remember me?</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/forgotPassword')}>
+            <TouchableOpacity onPress={handleForgot}>
               <Text style={styles.linkText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
@@ -111,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   title: {
-    fontSize: 40,
+    fontSize: 35,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'left',
@@ -162,6 +167,18 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    marginRight: 10,
+    backgroundColor: '#fff',
+  },
+  checkboxChecked: {
+    backgroundColor: '#00E1CD',
   },
   checkboxText: {
     fontSize: 16,

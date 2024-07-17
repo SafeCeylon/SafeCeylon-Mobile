@@ -1,29 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import logo from '../assets/images/Logo3.png';
 
-const SignUpPage = () => {
+const ForgotPasswordPage = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
-  const [nic, setNic] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignUp = () => {
-    if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields.');
+  const handlePasswordReset = () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address.');
       return;
     }
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-    // Add further sign-up logic here
-    Alert.alert('Success', 'Signed up successfully!');
+    // Add further password reset logic here
+    Alert.alert('Success', 'Password reset link sent!');
   };
 
   return (
@@ -36,37 +27,13 @@ const SignUpPage = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
           <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>Forgot Password</Text>
         </View>
 
         <View style={styles.formContainer}>
           <Text style={styles.instructionText}>
-            Provide your personal details to register with the system.
+            Enter the email associated with your account and we'll send an email with instructions to reset your password.
           </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            accessibilityLabel="Full Name"
-          />
-          <View style={styles.row}>
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="NIC"
-              value={nic}
-              onChangeText={setNic}
-              accessibilityLabel="NIC"
-            />
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="Mobile Number"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
-              keyboardType="phone-pad"
-              accessibilityLabel="Mobile Number"
-            />
-          </View>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
@@ -76,30 +43,14 @@ const SignUpPage = () => {
             onChangeText={setEmail}
             accessibilityLabel="Email Address"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            accessibilityLabel="Password"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm password"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            accessibilityLabel="Confirm Password"
-          />
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <TouchableOpacity style={styles.resetButton} onPress={handlePasswordReset}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.signUpText}>Sign Up</Text>
+              <Text style={styles.resetText}>Send Instructions</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
@@ -169,21 +120,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
-    marginBottom: 15,
+    marginBottom: 20,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  resetButton: {
     width: '100%',
-    marginBottom: 15,
-  },
-  halfInput: {
-    width: '48%',
-  },
-  signUpButton: {
-    width: '100%',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   gradientButton: {
     paddingVertical: 15,
@@ -191,7 +132,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  signUpText: {
+  resetText: {
     color: '#fff',
     fontSize: 18,
   },
@@ -206,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpPage;
+export default ForgotPasswordPage;
