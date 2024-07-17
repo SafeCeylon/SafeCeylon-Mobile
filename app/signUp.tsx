@@ -4,19 +4,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import logo from '../assets/images/Logo3.png';
 
-const SignInPage = () => {
+const SignUpPage = () => {
   const router = useRouter();
+  const [fullName, setFullName] = useState('');
+  const [nic, setNic] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignIn = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in both fields.');
+  const handleSignUp = () => {
+    if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    // Add further sign-in logic here
-    Alert.alert('Success', 'Signed in successfully!');
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+    // Add further sign-up logic here
+    Alert.alert('Success', 'Signed up successfully!');
   };
 
   return (
@@ -29,14 +36,37 @@ const SignInPage = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
           <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign In</Text>
+          <Text style={styles.title}>Sign Up</Text>
         </View>
 
         <View style={styles.formContainer}>
-          <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.instructionText}>
-            To keep connected with us please login with your personal info
+            Provide your personal details to register with the system.
           </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            value={fullName}
+            onChangeText={setFullName}
+            accessibilityLabel="Full Name"
+          />
+          <View style={styles.row}>
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder="NIC"
+              value={nic}
+              onChangeText={setNic}
+              accessibilityLabel="NIC"
+            />
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder="Mobile Number"
+              value={mobileNumber}
+              onChangeText={setMobileNumber}
+              keyboardType="phone-pad"
+              accessibilityLabel="Mobile Number"
+            />
+          </View>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
@@ -54,30 +84,26 @@ const SignInPage = () => {
             onChangeText={setPassword}
             accessibilityLabel="Password"
           />
-          <View style={styles.row}>
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setRememberMe(!rememberMe)}
-              accessibilityLabel="Remember Me"
-            >
-              <Text style={styles.checkboxText}>Remember me?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/forgotPassword')}>
-              <Text style={styles.linkText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm password"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            accessibilityLabel="Confirm Password"
+          />
+          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.signInText}>Sign in</Text>
+              <Text style={styles.signUpText}>Sign Up</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Don’t have an account? <Text style={styles.linkText} onPress={() => router.push('/signUp')}>Sign Up</Text>
+            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
           </Text>
         </View>
       </ScrollView>
@@ -130,13 +156,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
-  welcomeText: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
   instructionText: {
     fontSize: 16,
     color: '#666',
@@ -159,19 +178,10 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 15,
   },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  halfInput: {
+    width: '48%',
   },
-  checkboxText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#00E1CD',
-  },
-  signInButton: {
+  signUpButton: {
     width: '100%',
     marginBottom: 15,
   },
@@ -181,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  signInText: {
+  signUpText: {
     color: '#fff',
     fontSize: 18,
   },
@@ -190,6 +200,10 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
+  linkText: {
+    fontSize: 16,
+    color: '#00E1CD',
+  },
 });
 
-export default SignInPage;
+export default SignUpPage;

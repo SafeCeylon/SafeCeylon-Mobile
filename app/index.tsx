@@ -14,6 +14,10 @@ const LandingPage = () => {
     router.push('/signIn');
   };
 
+  const handleSignUp = () => {
+    router.push('/signUp');
+  }
+
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
       <View style={styles.container}>
@@ -30,7 +34,7 @@ const LandingPage = () => {
         </TouchableOpacity>
         <View style={styles.signUpContainer}>
           <Text style={styles.dontHaveText}>Don't have an account?</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleSignUp}>
             <Text style={styles.signUpText}> Sign Up</Text>
           </TouchableOpacity>
         </View>
