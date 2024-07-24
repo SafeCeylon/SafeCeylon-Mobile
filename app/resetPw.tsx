@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+
+
 import logo from '../assets/images/Logo3.png';
+import { router } from 'expo-router';
 
-const SignInPage = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
+const ResetPasswordPage = () => {
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignIn = () => {
-    if (!email || !password) {
+  const handleResetPassword = () => {
+    if (!password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
-    // Add further sign-in logic here
-    Alert.alert('Success', 'Signed in successfully!');
-  };
 
-  const handleForgot = () => {
-    router.push('/forgotPw');
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    // Add further reset password logic here
+    Alert.alert('Success', 'Password reset successfully!');
   };
 
   return (
@@ -32,24 +34,14 @@ const SignInPage = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign In</Text>
+            <Image source={logo} style={styles.logo} />
+          <Text style={styles.title}>Reset Password</Text>
         </View>
 
         <View style={styles.formContainer}>
-          <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.instructionText}>
-            To keep connected with us please login with your personal info
+            Your new password must be different from previous used passwords.
           </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email Address"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-            accessibilityLabel="Email Address"
-          />
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -58,31 +50,26 @@ const SignInPage = () => {
             onChangeText={setPassword}
             accessibilityLabel="Password"
           />
-          <View style={styles.row}>
-          <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setRememberMe(!rememberMe)}
-              accessibilityLabel="Remember Me"
-            >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]} />
-              <Text style={styles.checkboxText}>Remember me?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleForgot}>
-              <Text style={styles.linkText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            accessibilityLabel="Confirm Password"
+          />
+          <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.signInText}>Sign in</Text>
+              <Text style={styles.resetText}>Reset Password</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Don’t have an account? <Text style={styles.linkText} onPress={() => router.push('/signUp')}>Sign Up</Text>
+            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
           </Text>
         </View>
       </ScrollView>
@@ -100,8 +87,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingLeft: 3,
-    paddingRight: 3,
   },
   headerContainer: {
     marginTop: '20%',
@@ -135,13 +120,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
-  welcomeText: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
   instructionText: {
     fontSize: 16,
     color: '#666',
@@ -157,38 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 15,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 3,
-    marginRight: 10,
-    backgroundColor: '#fff',
-  },
-  checkboxChecked: {
-    backgroundColor: '#00E1CD',
-  },
-  checkboxText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#00E1CD',
-  },
-  signInButton: {
+  resetButton: {
     width: '100%',
     marginBottom: 15,
   },
@@ -198,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  signInText: {
+  resetText: {
     color: '#fff',
     fontSize: 18,
   },
@@ -207,6 +154,10 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
+  linkText: {
+    fontSize: 16,
+    color: '#00E1CD',
+  },
 });
 
-export default SignInPage;
+export default ResetPasswordPage;
