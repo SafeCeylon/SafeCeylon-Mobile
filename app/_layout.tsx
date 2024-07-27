@@ -37,7 +37,9 @@ export default function RootLayout() {
       <Stack.Screen name="forgotPw" options={{ title: 'Forgot Password' }} />
       <Stack.Screen name="emailVerify" options={{ title: 'Email Verification' }} />
       <Stack.Screen name="resetPw" options={{ title: 'Reset Password' }} />
-
+      <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+      <Stack.Screen name="profile" options={{ title: 'Profile' }} />\
+      <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
     </Stack>
   );
 }
