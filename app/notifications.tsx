@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingVertical: 20,
     paddingHorizontal: 20,
+    height: 100,
     backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: Adds slight background to header text
   },
   headerTitle: {
@@ -126,6 +127,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+    paddingTop: 10,
   },
   notificationContainer: {
     backgroundColor: '#f0f0f0',
