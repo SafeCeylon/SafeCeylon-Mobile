@@ -46,7 +46,7 @@ const ProfilePage = () => {
           <Text style={styles.detailLabel}>Email:</Text>
           <Text style={styles.detailText}>gayathra@example.com</Text>
 
-          <TouchableOpacity style={styles.changePasswordButton} onPress={() => router.push('/changePassword')}>
+          <TouchableOpacity style={styles.changePasswordButton} onPress={() => router.push('/resetPw')}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
@@ -72,7 +72,7 @@ const ProfilePage = () => {
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
           <FontAwesome5 name="bell" size={24} color="#ccc" />
           <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
+            <Text style={styles.notificationText}>6</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>

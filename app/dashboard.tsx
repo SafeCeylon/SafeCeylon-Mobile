@@ -79,19 +79,19 @@ const HomeScreen: React.FC = () => {
           <FontAwesome5 name="home" size={24} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
-          <FontAwesome5 name="map" size={24} color="#000" />
+          <FontAwesome5 name="map" size={24} color="#ccc" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
-          <FontAwesome5 name="comments" size={24} color="#000" />
+          <FontAwesome5 name="comments" size={24} color="#ccc" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
-          <FontAwesome5 name="bell" size={24} color="#000" />
+          <FontAwesome5 name="bell" size={24} color="#ccc" />
           <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
+            <Text style={styles.notificationText}>6</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
-          <FontAwesome5 name="user" size={24} color="#000" />
+          <FontAwesome5 name="user" size={24} color="#ccc" />
         </TouchableOpacity>
       </View>
     </View>
