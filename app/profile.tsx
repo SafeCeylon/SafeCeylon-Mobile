@@ -90,13 +90,13 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingVertical: 20,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: Adds slight background to header text
   },
   headerTitle: {
     fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+    paddingVertical: 10,
   },
   scrollContainer: {
     flexGrow: 1,
