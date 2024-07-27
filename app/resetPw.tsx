@@ -22,7 +22,8 @@ const ResetPasswordPage = () => {
     }
 
     // Add further reset password logic here
-    Alert.alert('Success', 'Password reset successfully!');
+    Alert.alert('Success', 'Password reset successfully! Please sign in.');
+    router.push('/signIn');
   };
 
   return (

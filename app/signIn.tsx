@@ -17,6 +17,7 @@ const SignInPage = () => {
     }
     // Add further sign-in logic here
     Alert.alert('Success', 'Signed in successfully!');
+    router.push('/dashboard');
   };
 
   const handleForgot = () => {
