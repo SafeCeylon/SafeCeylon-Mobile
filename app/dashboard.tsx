@@ -16,7 +16,6 @@ const HomeScreen: React.FC = () => {
       <ImageBackground source={backgroundImage} style={styles.headerBackgroundImage}>
         <View style={styles.headerContent}>
           <Image source={logo} style={styles.logo} />
-          <Text style={styles.headerTitle}>Dashboard</Text>
         </View>
       </ImageBackground>
 
@@ -113,7 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   logo: {
-    width: 100,
+    width: 350,
     height: 50,
     resizeMode: 'contain',
   },
