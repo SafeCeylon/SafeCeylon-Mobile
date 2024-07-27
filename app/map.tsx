@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import MapView from 'react-native-maps'; // Ensure react-native-maps is installed
 import { useRouter } from 'expo-router';
@@ -17,7 +17,17 @@ const MapPage: React.FC = () => {
 
   const handleSearchChange = (text: string) => {
     setSearchText(text);
+  };
+
+  const performSearch = () => {
+    if (searchText.trim() === '') {
+      Alert.alert('Search Error', 'Please enter a search term.');
+      return;
+    }
     // Implement search functionality here
+    // For example, you might want to filter map markers or perform an API call
+    Alert.alert('Search', `Searching for: ${searchText}`);
+    // You might also update the map or other components based on the search result
   };
 
   const toggleReportDropdown = () => setShowReportDropdown(!showReportDropdown);
@@ -50,7 +60,10 @@ const MapPage: React.FC = () => {
           value={searchText}
           onChangeText={handleSearchChange}
         />
-        <TouchableOpacity style={styles.searchButton} onPress={() => { /* Implement search action */ }}>
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={performSearch}
+        >
           <FontAwesome5 name="search" size={18} color="#007B70" />
         </TouchableOpacity>
       </View>
@@ -160,14 +173,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#007B70',
     borderWidth: 1,
+    borderRadius: 5, // Rounded edges
     padding: 10,
+    paddingRight: 40, // Make space for the search icon
   },
   searchButton: {
-    marginLeft: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderColor: '#007B70',
-    borderWidth: 1,
+    position: 'absolute',
+    right: 20, // Position icon inside the search bar
+    top: '50%',
+    transform: [{ translateY: -9 }], // Center vertically
     justifyContent: 'center',
     alignItems: 'center',
   },
