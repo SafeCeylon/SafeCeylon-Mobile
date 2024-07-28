@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import logo from "../assets/images/Logo3.png";
@@ -15,6 +16,8 @@ import disasterImage from "../assets/images/disaster.png";
 import predictionsImage from "../assets/images/predictions.png";
 import { useRouter } from "expo-router";
 import moment from 'moment';
+
+const { width, height } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
@@ -78,7 +81,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.weatherInfoContainer}>
             <Image source={weatherImage} style={styles.weatherIcon} />
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
+              <Text style={styles.weatherTemp}>{weather.temperature} Â°C</Text>
               <Text style={styles.weatherCondition}>{weather.condition}</Text>
               <Text style={styles.weatherDetails}>
                 Precipitation: {weather.precipitation} mm
@@ -132,7 +135,7 @@ const HomeScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push("/disasterPredictions")}
+          onPress={() => router.push("/disaster-predictions")}
         >
           <Image source={predictionsImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -198,8 +201,8 @@ const styles = StyleSheet.create({
   },
   headerBackgroundImage: {
     width: "100%",
-    height: 250,
-    justifyContent: "center",
+    height: height * 0.3,
+    // justifyContent: "center",
     alignItems: "center",
   },
   headerContent: {
@@ -207,13 +210,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   logo: {
-    width: 250,
-    height: 100,
+    width: width * 0.6,
+    height: height * 0.12,
+    marginTop: height * 0.05,
     resizeMode: "contain",
   },
   weatherContainer: {
     position: 'absolute',
-    top: 200, // Adjust this value as needed to create the overlap
+    top: height * 0.2, // Adjust this value as needed to create the overlap
     width: '100%',
     alignItems: 'center',
     zIndex: 2,
@@ -237,8 +241,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   weatherIcon: {
-    width: 50,
-    height: 50,
+    width: width * 0.1,
+    height: width * 0.1,
     marginRight: 10,
   },
   weatherDetailsContainer: {
@@ -246,45 +250,45 @@ const styles = StyleSheet.create({
   },
   weatherTemp: {
     color: '#333',
-    fontSize: 36,
+    fontSize: width * 0.09,
     fontWeight: 'bold',
   },
   weatherCondition: {
     color: '#333',
-    fontSize: 18,
+    fontSize: width * 0.045,
   },
   weatherDetails: {
     color: '#777',
-    fontSize: 14,
+    fontSize: width * 0.035,
   },
   weatherDateContainer: {
     alignItems: 'flex-end',
   },
   weatherToday: {
     color: '#333',
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: 'bold',
   },
   weatherDay: {
     color: '#777',
-    fontSize: 16,
+    fontSize: width * 0.04,
   },
   weatherTime: {
     color: '#777',
-    fontSize: 16,
+    fontSize: width * 0.04,
   },
   cardContainer: {
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 20,
-    marginTop: 100, // Adjust this value to position the cards correctly below the weather container
+   
+    marginTop: height * 0.1, // Adjust this value to position the cards correctly below the weather container
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    marginVertical: 10,
+    // marginVertical: 10,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.2,
@@ -292,7 +296,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 5, // Add this for Android shadow
     width: "90%",
-    height: 130,
+    height: height * 0.15,
     padding: 0,
   },
   cardImage: {
@@ -305,24 +309,24 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingHorizontal: width * 0.08,
     paddingVertical: 10,
     zIndex: 1,
-    marginRight: 60,
+    marginRight: width * 0.1,
   },
   cardTitle: {
-    fontSize: 25,
+    fontSize: width * 0.06,
     fontWeight: "bold",
     marginBottom: 10,
     color: "#FF9900",
   },
   cardDescription: {
-    fontSize: 15,
+    fontSize: width * 0.035,
     color: "#fff",
   },
   arrowContainer: {
     backgroundColor: "#fff",
-    width: 50,
+    width: width * 0.12,
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
@@ -346,7 +350,7 @@ const styles = StyleSheet.create({
   },
   sosText: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: width * 0.06,
     fontWeight: "bold",
     borderRadius: 15,
     paddingVertical: 5,
