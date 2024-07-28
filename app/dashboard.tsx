@@ -151,7 +151,8 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.sosButton}>
+      <TouchableOpacity style={styles.sosButton}
+        onPress={() => router.push("sos")}>
         <Text style={styles.sosText}>SOS</Text>
       </TouchableOpacity>
 

@@ -43,6 +43,7 @@ export default function RootLayout() {
       <Stack.Screen name="map" options={{ title: 'Map' }} />
       <Stack.Screen name="weather" options={{ title: 'Weather' }} />
       <Stack.Screen name="disaster-predictions" options={{ title: 'Disaster-Predictions' }} />
+      <Stack.Screen name="sos" options={{ title: 'Sos' }} />
     </Stack>
   );
 }
