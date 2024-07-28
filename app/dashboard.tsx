@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   ImageBackground,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -27,8 +26,10 @@ const HomeScreen: React.FC = () => {
     wind: "",
   });
 
-  const currentDay = moment().format('dddd');
-  const currentTime = moment().format('h:mm a');
+  const [dateTime, setDateTime] = useState({
+    currentDay: moment().format('dddd'),
+    currentTime: moment().format('h:mm a'),
+  });
 
   useEffect(() => {
     // Fetch weather data using Google Weather API
@@ -37,11 +38,11 @@ const HomeScreen: React.FC = () => {
         const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
         const data = await response.json();
         setWeather({
-          temperature: `${data.current.temp_c} °C`,
+          temperature: `${data.current.temp_c}`,
           condition: data.current.condition.text,
-          precipitation: `${data.current.precip_mm} mm`,
-          humidity: `${data.current.humidity}%`,
-          wind: `${data.current.wind_kph} km/h`,
+          precipitation: `${data.current.precip_mm}`,
+          humidity: `${data.current.humidity}`,
+          wind: `${data.current.wind_kph}`,
         });
       } catch (error) {
         console.error("Error fetching weather data:", error);
@@ -49,6 +50,16 @@ const HomeScreen: React.FC = () => {
     };
 
     fetchWeather();
+
+    const intervalId = setInterval(() => {
+      setDateTime({
+        currentDay: moment().format('dddd'),
+        currentTime: moment().format('h:mm a'),
+      });
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+
   }, []);
 
   return (
@@ -67,13 +78,13 @@ const HomeScreen: React.FC = () => {
           <View style={styles.weatherInfoContainer}>
             <Image source={weatherImage} style={styles.weatherIcon} />
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature}°C</Text>
+              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
               <Text style={styles.weatherCondition}>{weather.condition}</Text>
               <Text style={styles.weatherDetails}>
-                Precipitation: {weather.precipitation}%
+                Precipitation: {weather.precipitation} mm
               </Text>
               <Text style={styles.weatherDetails}>
-                Humidity: {weather.humidity}%
+                Humidity: {weather.humidity} %
               </Text>
               <Text style={styles.weatherDetails}>
                 Wind: {weather.wind} km/h
@@ -82,13 +93,12 @@ const HomeScreen: React.FC = () => {
           </View>
           <View style={styles.weatherDateContainer}>
             <Text style={styles.weatherToday}>Today</Text>
-            <Text style={styles.weatherDay}>{currentDay}</Text>
-            <Text style={styles.weatherTime}>{currentTime}</Text>
+            <Text style={styles.weatherDay}>{dateTime.currentDay}</Text>
+            <Text style={styles.weatherTime}>{dateTime.currentTime}</Text>
           </View>
         </View>
       </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.cardContainer}>
         <TouchableOpacity
           style={styles.card}
           onPress={() => router.push("/weatherForecasts")}
@@ -139,11 +149,11 @@ const HomeScreen: React.FC = () => {
             <FontAwesome5 name="chevron-right" size={24} color="#000" />
           </View>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity style={styles.sosButton}>
-          <Text style={styles.sosText}>SOS</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <TouchableOpacity style={styles.sosButton}>
+        <Text style={styles.sosText}>SOS</Text>
+      </TouchableOpacity>
 
       <View style={styles.bottomNav}>
         <TouchableOpacity
@@ -187,6 +197,7 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "space-between",
   },
   headerBackgroundImage: {
     width: "100%",
@@ -204,21 +215,23 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   weatherContainer: {
+    position: 'absolute',
+    top: 200, // Adjust this value as needed to create the overlap
     width: '100%',
     alignItems: 'center',
-    paddingVertical: 15,
+    zIndex: 2,
   },
   weatherBackground: {
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
     width: '90%',
-    marginTop: -40,
     zIndex: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // Add this for Android shadow
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -263,10 +276,12 @@ const styles = StyleSheet.create({
     color: '#777',
     fontSize: 16,
   },
-  scrollContainer: {
-    flexGrow: 1,
-    alignItems: "center",
-    paddingBottom: 100,
+  cardContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: 100, // Adjust this value to position the cards correctly below the weather container
   },
   card: {
     flexDirection: "row",
@@ -275,11 +290,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5, // Add this for Android shadow
     width: "90%",
-    height: 120,
+    height: 130,
     padding: 0,
   },
   cardImage: {
@@ -300,7 +316,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 10,
     color: "#FF9900",
   },
   cardDescription: {
@@ -323,7 +339,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 5,
-    marginTop: 10,
+    marginVertical: 20,
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // Add this for Android shadow
   },
   sosText: {
     color: "#fff",
@@ -342,9 +364,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
   },
   navItem: {
     alignItems: "center",
