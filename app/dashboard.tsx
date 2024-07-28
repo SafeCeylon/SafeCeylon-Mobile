@@ -99,10 +99,7 @@ const HomeScreen: React.FC = () => {
         </View>
       </View>
       <View style={styles.cardContainer}>
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => router.push("/weatherForecasts")}
-        >
+        <TouchableOpacity style={styles.card} onPress={() => router.push('/weather')}>
           <Image source={weatherImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Weather Forecasts</Text>

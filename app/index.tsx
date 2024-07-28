@@ -11,7 +11,7 @@ const LandingPage = () => {
   const router = useRouter();
 
   const handleSignIn = () => {
-    router.push('/signIn');
+    router.push('/dashboard');
   };
 
   const handleSignUp = () => {

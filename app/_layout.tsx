@@ -41,6 +41,7 @@ export default function RootLayout() {
       <Stack.Screen name="profile" options={{ title: 'Profile' }} />\
       <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
       <Stack.Screen name="map" options={{ title: 'Map' }} />
+      <Stack.Screen name="weather" options={{ title: 'Weather' }} />
     </Stack>
   );
 }
