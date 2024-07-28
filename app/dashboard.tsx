@@ -29,7 +29,7 @@ const HomeScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/weatherForecasts')}>
+        <TouchableOpacity style={styles.card} onPress={() => router.push('/weather')}>
           <Image source={weatherImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Weather Forecasts</Text>
