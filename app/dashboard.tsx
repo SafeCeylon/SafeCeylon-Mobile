@@ -1,19 +1,62 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
-import logo from '../assets/images/Logo3.png';
-import backgroundImage from '../assets/images/defaultBGclipped.png';
-import weatherImage from '../assets/images/weather.png';
-import disasterImage from '../assets/images/disaster.png';
-import predictionsImage from '../assets/images/predictions.png';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+} from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import logo from "../assets/images/Logo3.png";
+import backgroundImage from "../assets/images/defaultBGclipped.png";
+import weatherImage from "../assets/images/weather.png";
+import disasterImage from "../assets/images/disaster.png";
+import predictionsImage from "../assets/images/predictions.png";
+import { useRouter } from "expo-router";
+import moment from 'moment';
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
+  const [weather, setWeather] = useState({
+    temperature: "",
+    condition: "",
+    precipitation: "",
+    humidity: "",
+    wind: "",
+  });
+
+  const currentDay = moment().format('dddd');
+  const currentTime = moment().format('h:mm a');
+
+  useEffect(() => {
+    // Fetch weather data using Google Weather API
+    const fetchWeather = async () => {
+      try {
+        const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
+        const data = await response.json();
+        setWeather({
+          temperature: `${data.current.temp_c} °C`,
+          condition: data.current.condition.text,
+          precipitation: `${data.current.precip_mm} mm`,
+          humidity: `${data.current.humidity}%`,
+          wind: `${data.current.wind_kph} km/h`,
+        });
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={backgroundImage} style={styles.headerBackgroundImage}>
+      <ImageBackground
+        source={backgroundImage}
+        style={styles.headerBackgroundImage}
+      >
         <View style={styles.headerContent}>
           <Image source={logo} style={styles.logo} />
         </View>
@@ -21,20 +64,41 @@ const HomeScreen: React.FC = () => {
 
       <View style={styles.weatherContainer}>
         <View style={styles.weatherBackground}>
-          <Text style={styles.headerText}>Tuesday 1:00 pm | Mostly Cloudy</Text>
-          <Text style={styles.headerSubText}>
-            ll Temperature: 30 °C || Precipitation: 64% || Humidity: 78% || Wind: 21 km/h ll
-          </Text>
+          <View style={styles.weatherInfoContainer}>
+            <Image source={weatherImage} style={styles.weatherIcon} />
+            <View style={styles.weatherDetailsContainer}>
+              <Text style={styles.weatherTemp}>{weather.temperature}°C</Text>
+              <Text style={styles.weatherCondition}>{weather.condition}</Text>
+              <Text style={styles.weatherDetails}>
+                Precipitation: {weather.precipitation}%
+              </Text>
+              <Text style={styles.weatherDetails}>
+                Humidity: {weather.humidity}%
+              </Text>
+              <Text style={styles.weatherDetails}>
+                Wind: {weather.wind} km/h
+              </Text>
+            </View>
+          </View>
+          <View style={styles.weatherDateContainer}>
+            <Text style={styles.weatherToday}>Today</Text>
+            <Text style={styles.weatherDay}>{currentDay}</Text>
+            <Text style={styles.weatherTime}>{currentTime}</Text>
+          </View>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/weatherForecasts')}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push("/weatherForecasts")}
+        >
           <Image source={weatherImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Weather Forecasts</Text>
             <Text style={styles.cardDescription}>
-              View public weather, Marine weather, City forecasts, 9 day weather forecast, Weekly weather.
+              View public weather, Marine weather, City forecasts, 9 day weather
+              forecast, Weekly weather.
             </Text>
           </View>
           <View style={styles.arrowContainer}>
@@ -42,12 +106,16 @@ const HomeScreen: React.FC = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/disasters')}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push("/disasters")}
+        >
           <Image source={disasterImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Disasters</Text>
             <Text style={styles.cardDescription}>
-              Manage user reports, View DMC reports, View hospitals, shelters locations and Avoid disasters.
+              Manage user reports, View DMC reports, View hospitals, shelters
+              locations and Avoid disasters.
             </Text>
           </View>
           <View style={styles.arrowContainer}>
@@ -55,12 +123,16 @@ const HomeScreen: React.FC = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/disasterPredictions')}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push("/disasterPredictions")}
+        >
           <Image source={predictionsImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Disaster Predictions</Text>
             <Text style={styles.cardDescription}>
-              View disaster prediction locations, mainly Floods, Landslides, Hurricanes.
+              View disaster prediction locations, mainly Floods, Landslides,
+              Hurricanes.
             </Text>
           </View>
           <View style={styles.arrowContainer}>
@@ -74,22 +146,37 @@ const HomeScreen: React.FC = () => {
       </ScrollView>
 
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/dashboard')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/dashboard")}
+        >
           <FontAwesome5 name="home" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/map")}
+        >
           <FontAwesome5 name="map" size={24} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/comments")}
+        >
           <FontAwesome5 name="comments" size={24} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/notifications")}
+        >
           <FontAwesome5 name="bell" size={24} color="#ccc" />
           <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>6</Text>
+            <Text style={styles.notificationText}>4</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/profile")}
+        >
           <FontAwesome5 name="user" size={24} color="#ccc" />
         </TouchableOpacity>
       </View>
@@ -102,138 +189,177 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerBackgroundImage: {
-    width: '100%',
-    height: 150,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: 250,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 10,
   },
   logo: {
-    width: 350,
-    height: 50,
-    resizeMode: 'contain',
-  },
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginVertical: 5,
+    width: 250,
+    height: 100,
+    resizeMode: "contain",
   },
   weatherContainer: {
     width: '100%',
-    paddingHorizontal: 0,
-    paddingVertical: 0,
+    alignItems: 'center',
+    paddingVertical: 15,
   },
   weatherBackground: {
-    backgroundColor: '#0E7C75',
-    borderRadius: 0,
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 10,
+    width: '90%',
+    marginTop: -40,
+    zIndex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  weatherInfoContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  headerText: {
-    color: '#fff',
+  weatherIcon: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+  },
+  weatherDetailsContainer: {
+    alignItems: 'flex-start',
+  },
+  weatherTemp: {
+    color: '#333',
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  weatherCondition: {
+    color: '#333',
     fontSize: 18,
   },
-  headerSubText: {
-    color: '#fff',
+  weatherDetails: {
+    color: '#777',
     fontSize: 14,
-    textAlign: 'center',
+  },
+  weatherDateContainer: {
+    alignItems: 'flex-end',
+  },
+  weatherToday: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  weatherDay: {
+    color: '#777',
+    fontSize: 16,
+  },
+  weatherTime: {
+    color: '#777',
+    fontSize: 16,
   },
   scrollContainer: {
     flexGrow: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingBottom: 100,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     marginVertical: 10,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
-    width: '90%',
-    padding: 0, // Adjust padding to fit the image background
+    width: "90%",
+    height: 120,
+    padding: 0,
   },
   cardImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
-    position: 'absolute', // Make the image cover the card
+    position: "absolute",
     top: 0,
     left: 0,
   },
   cardContent: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
     paddingVertical: 10,
-    zIndex: 1, // Ensure content is above the image
-    marginRight: 60, // Adjust margin to prevent overlap with arrow
+    zIndex: 1,
+    marginRight: 60,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 25,
+    fontWeight: "bold",
     marginBottom: 5,
-    color: '#FFD700',
+    color: "#FF9900",
   },
   cardDescription: {
-    fontSize: 14,
-    color: '#fff', // Changed text color to white
+    fontSize: 15,
+    color: "#fff",
   },
   arrowContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     width: 50,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
   },
   sosButton: {
-    backgroundColor: '#FF9900',
-    borderRadius: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    marginTop: 20,
+    backgroundColor: "#FF9900",
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    marginTop: 10,
   },
   sosText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: "#fff",
+    fontSize: 25,
+    fontWeight: "bold",
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    position: 'absolute',
+    borderTopColor: "#ccc",
+    position: "absolute",
     bottom: 0,
-    width: '100%',
+    width: "100%",
   },
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   notificationBadge: {
-    position: 'absolute',
+    position: "absolute",
     right: -6,
     top: -5,
-    backgroundColor: 'black',
+    backgroundColor: "black",
     borderRadius: 8,
     padding: 2,
     paddingHorizontal: 5,
   },
   notificationText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
   },
 });
