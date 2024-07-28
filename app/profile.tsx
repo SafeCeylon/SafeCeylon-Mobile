@@ -15,9 +15,7 @@ const ProfilePage = () => {
       end={[1, 0]}
       style={styles.gradientBackground}
     >
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View>
+      
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileSection}>
@@ -87,10 +85,6 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
   },
-  headerContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-  },
   headerTitle: {
     fontSize: 30,
     fontWeight: 'bold',
@@ -106,6 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   profilePicContainer: {
+    paddingTop: 60,
     position: 'relative',
   },
   profilePic: {
