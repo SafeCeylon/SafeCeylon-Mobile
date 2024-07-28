@@ -341,7 +341,7 @@ const DisasterPrediction: React.FC = () => {
                         >
                             <Picker.Item label="Landslide" value="Landslide" />
                             <Picker.Item label="Air Quality" value="Air Quality" />
-                            <Picker.Item label="Hurricanes" value="Hurricanes" />
+                            <Picker.Item label="Hurricane" value="Hurricane" />
                             <Picker.Item label="Floods" value="Floods" />
                         </Picker>
                     </View>
