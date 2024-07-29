@@ -35,9 +35,10 @@ import temperatureImage8 from "../assets/images/temp/temp_8.png";
 import tempIcon from "../assets/images/w_icons/clouds-and-sun.png";
 import { useRouter } from "expo-router";
 
+
 const MarineWeatherScreen: React.FC = () => {
   const router = useRouter();
-  const [selectedWeather, setSelectedWeather] = useState("Marine Weather");
+  const [selectedWeather, setSelectedWeather] = useState("Weather");
   const [hour, setHour] = useState(16); // Default to 4:00 PM
   const [dayOffset, setDayOffset] = useState(0); // Default to current day
   const [selectedDay, setSelectedDay] = useState("");
@@ -597,4 +598,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MarineWeatherScreen;
+export default Weather;
