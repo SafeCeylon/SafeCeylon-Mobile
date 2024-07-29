@@ -81,7 +81,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.weatherInfoContainer}>
             <Image source={weatherImage} style={styles.weatherIcon} />
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature} Â°C</Text>
+              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
               <Text style={styles.weatherCondition}>{weather.condition}</Text>
               <Text style={styles.weatherDetails}>
                 Precipitation: {weather.precipitation} mm

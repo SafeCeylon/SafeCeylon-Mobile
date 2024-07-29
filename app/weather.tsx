@@ -36,7 +36,7 @@ import tempIcon from "../assets/images/w_icons/clouds-and-sun.png";
 import { useRouter } from "expo-router";
 
 
-const MarineWeatherScreen: React.FC = () => {
+const Weather: React.FC = () => {
   const router = useRouter();
   const [selectedWeather, setSelectedWeather] = useState("Weather");
   const [hour, setHour] = useState(16); // Default to 4:00 PM
