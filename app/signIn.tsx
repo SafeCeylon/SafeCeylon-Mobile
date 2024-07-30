@@ -1,32 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import logo from '../assets/images/Logo3.png';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import logo from "../assets/images/Logo3.png";
 
 const SignInPage = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSignIn = () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in both fields.');
+      Alert.alert("Error", "Please fill in both fields.");
       return;
     }
     // Add further sign-in logic here
-    Alert.alert('Success', 'Signed in successfully!');
-    router.push('/dashboard');
+    Alert.alert("Success", "Signed in successfully!");
+    router.push("/dashboard");
   };
 
   const handleForgot = () => {
-    router.push('/forgotPw');
+    router.push("/forgotPw");
   };
 
   return (
     <LinearGradient
-      colors={['#007B70', '#00E1CD']}
+      colors={["#007B70", "#00E1CD"]}
       start={[0, 0]}
       end={[1, 0]}
       style={styles.gradientBackground}
@@ -60,12 +69,14 @@ const SignInPage = () => {
             accessibilityLabel="Password"
           />
           <View style={styles.row}>
-          <TouchableOpacity
+            <TouchableOpacity
               style={styles.checkboxContainer}
               onPress={() => setRememberMe(!rememberMe)}
               accessibilityLabel="Remember Me"
             >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]} />
+              <View
+                style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
+              />
               <Text style={styles.checkboxText}>Remember me?</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleForgot}>
@@ -74,7 +85,7 @@ const SignInPage = () => {
           </View>
           <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
             <LinearGradient
-              colors={['#007B70', '#00E1CD']}
+              colors={["#007B70", "#00E1CD"]}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
@@ -83,7 +94,13 @@ const SignInPage = () => {
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Don’t have an account? <Text style={styles.linkText} onPress={() => router.push('/signUp')}>Sign Up</Text>
+            Don’t have an account?{" "}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push("/signUp")}
+            >
+              Sign Up
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -94,119 +111,119 @@ const SignInPage = () => {
 const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingLeft: 3,
     paddingRight: 3,
   },
   headerContainer: {
-    marginTop: '20%',
+    marginTop: "20%",
     marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   logo: {
-    width: '55%',
+    width: "55%",
     height: 50,
     marginBottom: 40,
   },
   title: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "left",
+    alignSelf: "flex-start",
     marginLeft: 20,
   },
   formContainer: {
     flex: 1,
-    width: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    backgroundColor: "#fff",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
   welcomeText: {
     fontSize: 25,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
   instructionText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 15,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   checkbox: {
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 3,
     marginRight: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   checkboxChecked: {
-    backgroundColor: '#00E1CD',
+    backgroundColor: "#00E1CD",
   },
   checkboxText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
   linkText: {
     fontSize: 16,
-    color: '#00E1CD',
+    color: "#00E1CD",
   },
   signInButton: {
-    width: '100%',
+    width: "100%",
     marginBottom: 15,
   },
   gradientButton: {
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   signInText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   footerText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
 });
 
