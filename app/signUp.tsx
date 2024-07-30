@@ -3,27 +3,80 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image,
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import logo from '../assets/images/Logo3.png';
+import axios from 'axios';
 
 const SignUpPage = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
+  const [name, setName] = useState('');
   const [nic, setNic] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidNic = (nic) => {
+    return nic.length === 10 || nic.length === 12; // Assuming NIC is either 10 or 12 characters long
+  };
+
+  const isValidMobileNumber = (mobileNumber) => {
+    return mobileNumber.length === 10; // Assuming mobile number is 10 digits
+  };
+
+  const isValidPassword = (password) => {
+    return password.length >= 6; // Password must be at least 6 characters
+  };
+
   const handleSignUp = () => {
-    if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
+    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      Alert.alert('Error', 'Invalid email format.');
+      return;
+    }
+    if (!isValidNic(nic)) {
+      Alert.alert('Error', 'Invalid NIC format.');
+      return;
+    }
+    if (!isValidMobileNumber(mobileNumber)) {
+      Alert.alert('Error', 'Mobile number must be 10 digits.');
+      return;
+    }
+    if (!isValidPassword(password)) {
+      Alert.alert('Error', 'Password must be at least 6 characters.');
       return;
     }
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-    // Add further sign-up logic here
-    Alert.alert('Success', 'Signed up successfully!');
+
+    const userData = {
+      name,
+      nic,
+      mobileNumber,
+      email,
+      password,
+    };
+    axios.post('http://192.168.1.14:4000/signup', userData).then((response) => {
+      if (response.data.status === 409) {
+        Alert.alert('Error', 'User already exists.');
+      } else if (response.data.status === 200) {
+        Alert.alert('Success', 'User registered successfully!');
+        router.push('/signIn');
+      } else {
+        Alert.alert('Error', 'Failed to register user.');
+      }
+    }).catch((error) => {
+      console.error(error);
+      Alert.alert('Error', 'Failed to register user.');
+    });
   };
 
   return (
@@ -46,8 +99,8 @@ const SignUpPage = () => {
           <TextInput
             style={styles.input}
             placeholder="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
+            value={name}
+            onChangeText={setName}
             accessibilityLabel="Full Name"
           />
           <View style={styles.row}>
