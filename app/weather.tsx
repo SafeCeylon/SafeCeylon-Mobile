@@ -35,6 +35,7 @@ import temperatureImage8 from "../assets/images/temp/temp_8.png";
 import tempIcon from "../assets/images/w_icons/clouds-and-sun.png";
 import { useRouter } from "expo-router";
 
+
 const Weather: React.FC = () => {
   const router = useRouter();
   const [selectedWeather, setSelectedWeather] = useState("Weather");

@@ -1,19 +1,39 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome5 } from "@expo/vector-icons";
-import profilePic from "../assets/images/profilePic.jpeg"; // Updated profile picture path
-import { useRouter } from "expo-router";
+
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5 } from '@expo/vector-icons';
+import profilePic from '../assets/images/profilePic.jpeg'; // Updated profile picture path
+import { useRouter } from 'expo-router';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const ProfilePage = () => {
+  const [userData, setUserData] = useState(null);
   const router = useRouter();
+
+  async function getData() {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post('http://192.168.1.14:4000/userdata', { token: token });
+      setUserData(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  if (!userData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <LinearGradient
@@ -30,7 +50,7 @@ const ProfilePage = () => {
               <FontAwesome5 name="pen" size={20} color="#007B70" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.name}>Gayathra Dissanayake</Text>
+          <Text style={styles.name}>{userData.name}</Text>
         </View>
 
         <View style={styles.detailsContainer}>
@@ -41,13 +61,13 @@ const ProfilePage = () => {
           <Text style={styles.detailText}>123, Main Street, Colombo</Text>
 
           <Text style={styles.detailLabel}>NIC:</Text>
-          <Text style={styles.detailText}>123456789V</Text>
+          <Text style={styles.detailText}>{userData.nic}</Text>
 
           <Text style={styles.detailLabel}>Phone:</Text>
-          <Text style={styles.detailText}>+94 123 456 789</Text>
+          <Text style={styles.detailText}>{userData.mobileNumber}</Text>
 
           <Text style={styles.detailLabel}>Email:</Text>
-          <Text style={styles.detailText}>gayathra@example.com</Text>
+          <Text style={styles.detailText}>{userData.email}</Text>
 
           <TouchableOpacity
             style={styles.changePasswordButton}
@@ -108,12 +128,19 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
   },
+
   headerTitle: {
     fontSize: 30,
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
     paddingVertical: 10,
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+
   },
   scrollContainer: {
     flexGrow: 1,

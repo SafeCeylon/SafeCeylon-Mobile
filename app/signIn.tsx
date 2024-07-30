@@ -1,17 +1,12 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Alert,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import logo from "../assets/images/Logo3.png";
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import logo from '../assets/images/Logo3.png';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const SignInPage = () => {
   const router = useRouter();
@@ -24,9 +19,27 @@ const SignInPage = () => {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
-    // Add further sign-in logic here
-    Alert.alert("Success", "Signed in successfully!");
-    router.push("/dashboard");
+
+    const userData = {
+      email,
+      password,
+    };
+    axios.post('http://192.168.1.14:4000/login', userData).then((res) => {
+      if (res.data.status === 404) {
+        Alert.alert('Error', 'User not found.');
+      } else if (res.data.status === 405) {
+        Alert.alert('Error', 'Invalid Password.');
+      } else {
+        Alert.alert('Success', 'Logged in successfully.');
+        AsyncStorage.setItem('token', res.data.token);
+        if (rememberMe) {
+          // Save user data to AsyncStorage
+        }
+        router.push('/dashboard');
+      }
+    }).catch((err) => {
+      Alert.alert('Error', err.message);
+    });
   };
 
   const handleForgot = () => {
