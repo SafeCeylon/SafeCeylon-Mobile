@@ -80,7 +80,7 @@ const ResetPasswordPage = () => {
               <Text style={styles.resetText}>Reset Password</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <Text style={styles.footerText}>
+          {/* <Text style={styles.footerText}>
             Already have an account?{" "}
             <Text
               style={styles.linkText}
@@ -88,7 +88,7 @@ const ResetPasswordPage = () => {
             >
               Sign In
             </Text>
-          </Text>
+          </Text> */}
         </View>
       </ScrollView>
     </LinearGradient>
