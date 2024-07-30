@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,9 +11,9 @@ const SignUpPage = () => {
   const [nic, setNic] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,10 +33,8 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = () => {
-
-    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword) {
+    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword || !address) {
       Alert.alert('Error', 'Please fill in all fields.');
-
       return;
     }
     if (!isValidEmail(email)) {
@@ -61,7 +58,6 @@ const SignUpPage = () => {
       return;
     }
 
-
     const userData = {
       name,
       nic,
@@ -82,7 +78,6 @@ const SignUpPage = () => {
       console.error(error);
       Alert.alert('Error', 'Failed to register user.');
     });
-
   };
 
   return (
@@ -134,6 +129,15 @@ const SignUpPage = () => {
             value={email}
             onChangeText={setEmail}
             accessibilityLabel="Email Address"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Home Address"
+            keyboardType="home-address"
+            autoCapitalize="none"
+            value={address}
+            onChangeText={setAddress}
+            accessibilityLabel="Home Address"
           />
           <TextInput
             style={styles.input}

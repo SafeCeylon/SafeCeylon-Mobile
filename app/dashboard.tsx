@@ -15,18 +15,19 @@ import weatherImage from "../assets/images/weather.png";
 import disasterImage from "../assets/images/disaster.png";
 import predictionsImage from "../assets/images/predictions.png";
 import { useRouter } from "expo-router";
-import moment from "moment";
+import tempIcon from '../assets/images/w_icons/clouds-and-sun.png';
+import moment from 'moment';
 
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
   const [weather, setWeather] = useState({
-    temperature: "",
+    temperature: "27",
     condition: "",
-    precipitation: "",
-    humidity: "",
-    wind: "",
+    precipitation: "3.7",
+    humidity: "83",
+    wind: "33",
   });
 
   const [dateTime, setDateTime] = useState({
@@ -36,23 +37,23 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     // Fetch weather data using Google Weather API
-    const fetchWeather = async () => {
-      try {
-        const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
-        const data = await response.json();
-        setWeather({
-          temperature: `${data.current.temp_c}`,
-          condition: data.current.condition.text,
-          precipitation: `${data.current.precip_mm}`,
-          humidity: `${data.current.humidity}`,
-          wind: `${data.current.wind_kph}`,
-        });
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-      }
-    };
+    // const fetchWeather = async () => {
+    //   try {
+    //     const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
+    //     const data = await response.json();
+    //     setWeather({
+    //       temperature: `${data.current.temp_c}`,
+    //       condition: data.current.condition.text,
+    //       precipitation: `${data.current.precip_mm}`,
+    //       humidity: `${data.current.humidity}`,
+    //       wind: `${data.current.wind_kph}`,
+    //     });
+    //   } catch (error) {
+    //     console.error("Error fetching weather data:", error);
+    //   }
+    // };
 
-    fetchWeather();
+    // fetchWeather();
 
     const intervalId = setInterval(() => {
       setDateTime({
@@ -78,7 +79,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.weatherContainer}>
         <View style={styles.weatherBackground}>
           <View style={styles.weatherInfoContainer}>
-            <Image source={weatherImage} style={styles.weatherIcon} />
+            <Image source={tempIcon} style={styles.weatherIcon} />
             <View style={styles.weatherDetailsContainer}>
               <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
               <Text style={styles.weatherCondition}>{weather.condition}</Text>
@@ -185,7 +186,7 @@ const HomeScreen: React.FC = () => {
         >
           <FontAwesome5 name="bell" size={24} color="#ccc" />
           <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
+            <Text style={styles.notificationText}>6</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -246,8 +247,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   weatherIcon: {
-    width: width * 0.1,
-    height: width * 0.1,
+    width: width * 0.25,
+    height: width * 0.25,
     marginRight: 10,
   },
   weatherDetailsContainer: {
