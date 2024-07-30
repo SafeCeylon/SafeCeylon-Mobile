@@ -18,7 +18,7 @@ import { useRouter } from "expo-router";
 import tempIcon from '../assets/images/w_icons/clouds-and-sun.png';
 import moment from 'moment';
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
@@ -31,8 +31,8 @@ const HomeScreen: React.FC = () => {
   });
 
   const [dateTime, setDateTime] = useState({
-    currentDay: moment().format('dddd'),
-    currentTime: moment().format('h:mm a'),
+    currentDay: moment().format("dddd"),
+    currentTime: moment().format("h:mm a"),
   });
 
   useEffect(() => {
@@ -57,13 +57,12 @@ const HomeScreen: React.FC = () => {
 
     const intervalId = setInterval(() => {
       setDateTime({
-        currentDay: moment().format('dddd'),
-        currentTime: moment().format('h:mm a'),
+        currentDay: moment().format("dddd"),
+        currentTime: moment().format("h:mm a"),
       });
     }, 1000); // Update every second
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
-
   }, []);
 
   return (
@@ -103,7 +102,10 @@ const HomeScreen: React.FC = () => {
         </View>
       </View>
       <View style={styles.cardContainer}>
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/weather')}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push("/weather")}
+        >
           <Image source={weatherImage} style={styles.cardImage} />
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Weather Forecasts</Text>
@@ -152,8 +154,10 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.sosButton}
-        onPress={() => router.push("sos")}>
+      <TouchableOpacity
+        style={styles.sosButton}
+        onPress={() => router.push("sos")}
+      >
         <Text style={styles.sosText}>SOS</Text>
       </TouchableOpacity>
 
@@ -218,29 +222,29 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   weatherContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: height * 0.2, // Adjust this value as needed to create the overlap
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     zIndex: 2,
   },
   weatherBackground: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    width: '90%',
+    width: "90%",
     zIndex: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5, // Add this for Android shadow
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   weatherInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   weatherIcon: {
     width: width * 0.25,
@@ -248,42 +252,42 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   weatherDetailsContainer: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   weatherTemp: {
-    color: '#333',
+    color: "#333",
     fontSize: width * 0.09,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   weatherCondition: {
-    color: '#333',
+    color: "#333",
     fontSize: width * 0.045,
   },
   weatherDetails: {
-    color: '#777',
+    color: "#777",
     fontSize: width * 0.035,
   },
   weatherDateContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   weatherToday: {
-    color: '#333',
+    color: "#333",
     fontSize: width * 0.045,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   weatherDay: {
-    color: '#777',
+    color: "#777",
     fontSize: width * 0.04,
   },
   weatherTime: {
-    color: '#777',
+    color: "#777",
     fontSize: width * 0.04,
   },
   cardContainer: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-   
+    justifyContent: "space-between",
+    alignItems: "center",
+
     marginTop: height * 0.1, // Adjust this value to position the cards correctly below the weather container
   },
   card: {
@@ -339,12 +343,12 @@ const styles = StyleSheet.create({
   },
   sosButton: {
     backgroundColor: "#FF9900",
-    borderRadius: 20,
+    borderRadius: 30,
     paddingVertical: 5,
     paddingHorizontal: 5,
     marginVertical: 20,
-    alignSelf: 'center',
-    shadowColor: '#000',
+    alignSelf: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -354,9 +358,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: width * 0.06,
     fontWeight: "bold",
-    borderRadius: 15,
+    borderRadius: 30,
     paddingVertical: 5,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     borderWidth: 2,
     borderColor: "#fff",
   },

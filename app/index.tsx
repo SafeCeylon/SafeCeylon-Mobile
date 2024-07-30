@@ -1,22 +1,29 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ImageBackground,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 // Replace with your actual logo
-import logo from '../assets/images/Logo2.png';
-import backgroundImage from '../assets/images/HomeBG.png';
+import logo from "../assets/images/Logo2.png";
+import backgroundImage from "../assets/images/HomeBG.png";
 
 const LandingPage = () => {
   const router = useRouter();
 
   const handleSignIn = () => {
-    router.push('/signIn');
+    router.push("/signIn");
   };
 
   const handleSignUp = () => {
-    router.push('/signUp');
-  }
+    router.push("/signUp");
+  };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
@@ -24,7 +31,7 @@ const LandingPage = () => {
         <Image source={logo} style={styles.logo} />
         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
           <LinearGradient
-            colors={['#007B70', '#00E1CD']}
+            colors={["#007B70", "#00E1CD"]}
             start={[0, 0]}
             end={[1, 0]}
             style={styles.gradient}
@@ -46,14 +53,14 @@ const LandingPage = () => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.99)',
+    resizeMode: "cover",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.99)",
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 350,
@@ -61,30 +68,30 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   signInButton: {
-    width: '70%',
+    width: "70%",
     marginBottom: 15,
   },
   gradient: {
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   signInText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   signUpContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 10,
   },
   signUpText: {
-    color: '#00E1CD',
+    color: "#00E1CD",
     fontSize: 16,
   },
   dontHaveText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
     marginRight: 5,
   },
