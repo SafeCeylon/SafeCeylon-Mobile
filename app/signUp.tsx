@@ -11,6 +11,7 @@ const SignUpPage = () => {
   const [nic, setNic] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -32,7 +33,7 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = () => {
-    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword) {
+    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword || !address) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -128,6 +129,15 @@ const SignUpPage = () => {
             value={email}
             onChangeText={setEmail}
             accessibilityLabel="Email Address"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Home Address"
+            keyboardType="home-address"
+            autoCapitalize="none"
+            value={address}
+            onChangeText={setAddress}
+            accessibilityLabel="Home Address"
           />
           <TextInput
             style={styles.input}

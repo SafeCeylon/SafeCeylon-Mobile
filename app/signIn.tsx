@@ -30,7 +30,7 @@ const SignInPage = () => {
         Alert.alert('Success', 'Logged in successfully.');
         AsyncStorage.setItem('token', res.data.token);
         if (rememberMe) {
-          // Save user data to AsyncStorage
+            //remeber me data
         }
         router.push('/dashboard');
       }
