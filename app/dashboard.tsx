@@ -288,13 +288,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
 
-    marginTop: height * 0.1, // Adjust this value to position the cards correctly below the weather container
+    marginTop: height * 0.09, // Adjust this value to position the cards correctly below the weather container
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    // marginVertical: 10,
+    marginVertical: 5,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.2,
@@ -303,7 +303,6 @@ const styles = StyleSheet.create({
     elevation: 5, // Add this for Android shadow
     width: "90%",
     height: height * 0.15,
-    padding: 0,
   },
   cardImage: {
     width: "100%",
