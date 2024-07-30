@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,7 +14,6 @@ const SignUpPage = () => {
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,10 +32,9 @@ const SignUpPage = () => {
     return password.length >= 6; // Password must be at least 6 characters
   };
 
-  const handleSignUp = () => 
+  const handleSignUp = () => {
     if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword || !address) {
       Alert.alert('Error', 'Please fill in all fields.');
-
       return;
     }
     if (!isValidEmail(email)) {
@@ -61,7 +58,6 @@ const SignUpPage = () => {
       return;
     }
 
-
     const userData = {
       name,
       nic,
@@ -82,7 +78,6 @@ const SignUpPage = () => {
       console.error(error);
       Alert.alert('Error', 'Failed to register user.');
     });
-
   };
 
   return (
