@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,6 +14,7 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,8 +34,10 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = () => {
+
     if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields.');
+
       return;
     }
     if (!isValidEmail(email)) {
@@ -53,9 +57,10 @@ const SignUpPage = () => {
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      Alert.alert("Error", "Passwords do not match.");
       return;
     }
+
 
     const userData = {
       name,
@@ -77,11 +82,12 @@ const SignUpPage = () => {
       console.error(error);
       Alert.alert('Error', 'Failed to register user.');
     });
+
   };
 
   return (
     <LinearGradient
-      colors={['#007B70', '#00E1CD']}
+      colors={["#007B70", "#00E1CD"]}
       start={[0, 0]}
       end={[1, 0]}
       style={styles.gradientBackground}
@@ -147,7 +153,7 @@ const SignUpPage = () => {
           />
           <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
             <LinearGradient
-              colors={['#007B70', '#00E1CD']}
+              colors={["#007B70", "#00E1CD"]}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
@@ -156,7 +162,13 @@ const SignUpPage = () => {
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
+            Already have an account?{" "}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push("/signIn")}
+            >
+              Sign In
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -167,95 +179,95 @@ const SignUpPage = () => {
 const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingLeft: 3,
     paddingRight: 3,
   },
   headerContainer: {
-    marginTop: '20%',
+    marginTop: "20%",
     marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   logo: {
-    width: '55%',
+    width: "55%",
     height: 50,
     marginBottom: 40,
   },
   title: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "left",
+    alignSelf: "flex-start",
     marginLeft: 20,
   },
   formContainer: {
     flex: 1,
-    width: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    backgroundColor: "#fff",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
   instructionText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 15,
   },
   halfInput: {
-    width: '48%',
+    width: "48%",
   },
   signUpButton: {
-    width: '100%',
+    width: "100%",
     marginBottom: 15,
   },
   gradientButton: {
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   signUpText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   footerText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
   linkText: {
     fontSize: 16,
-    color: '#00E1CD',
+    color: "#00E1CD",
   },
 });
 

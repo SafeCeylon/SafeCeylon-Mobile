@@ -166,22 +166,22 @@ const Weather: React.FC = () => {
           <Image source={logo} style={styles.logo} />
         </View>
       </ImageBackground>
-
       <View style={styles.weatherImageContainer}>
-        <Text style={styles.weatherTitle}>Weather Forecasts</Text>
         <View style={styles.imageWrapper}>
           <Image source={weatherImage} style={styles.weatherImage} />
+          <View style={styles.textOverlay}>
+            <Text style={styles.weatherTitle}>Weather Forecasts</Text>
+            <Text style={styles.weatherDescription}>
+              Stay informed about potential natural disasters in your area.
+            </Text>
+          </View>
         </View>
-        <Text style={styles.weatherDescription}>
-          View public weather, Marine weather, City forecasts, 9 day weather
-          forecast, Weekly weather.
-        </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.dropdownContainer}>
-      <LinearGradient
-            colors={['#007B70', '#00E1CD']}
+        <View style={styles.dropdownContainer}>
+          <LinearGradient
+            colors={["#007B70", "#00E1CD"]}
             start={[0, 0]}
             end={[1, 0]}
             style={styles.gradient}
@@ -307,15 +307,22 @@ const Weather: React.FC = () => {
         {selectedWeather === "9 Day Forecast" && (
           <>
             <View style={styles.dropdownContainer}>
-              <Picker
-                selectedValue={selectedDay}
-                style={styles.picker}
-                onValueChange={(itemValue) => setSelectedDay(itemValue)}
+              <LinearGradient
+                colors={["#007B70", "#00E1CD"]}
+                start={[0, 0]}
+                end={[1, 0]}
+                style={styles.gradient}
               >
-                {dateRanges.map((range, index) => (
-                  <Picker.Item label={range} value={range} key={index} />
-                ))}
-              </Picker>
+                <Picker
+                  selectedValue={selectedDay}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setSelectedDay(itemValue)}
+                >
+                  {dateRanges.map((range, index) => (
+                    <Picker.Item label={range} value={range} key={index} />
+                  ))}
+                </Picker>
+              </LinearGradient>
             </View>
 
             <View style={styles.card}>
@@ -406,9 +413,8 @@ const styles = StyleSheet.create({
   },
 
   weatherImageContainer: {
-    marginLeft: "5%", // Adjust margin to give some padding from the sides
-    width: "90%", // Adjust width to give some padding from the sides
-    // justifyContent: 'center',
+    marginLeft: "5%",
+    width: "90%",
     alignItems: "center",
     marginTop: -80,
     paddingVertical: 20,
@@ -417,38 +423,42 @@ const styles = StyleSheet.create({
   imageWrapper: {
     width: "100%",
     backgroundColor: "#fff",
-    borderRadius: 20, // Apply rounded edges
+    borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    overflow: "hidden", // Ensure the image conforms to rounded edges
-    justifyContent: "center", // Center content horizontally
-    alignItems: "center", // Center content vertically
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   weatherImage: {
     width: "100%",
     height: 150,
     resizeMode: "cover", // Use 'cover' to fill the container
   },
-  weatherTitle: {
+  textOverlay: {
     position: "absolute",
-    top: "35%", // Adjust top position to center relative to container
-    fontSize: 24,
-    color: "#FFD700",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+  },
+  weatherTitle: {
+    fontSize: 25,
     fontWeight: "bold",
-    zIndex: 1,
-    textAlign: "center", // Center text horizontally
+    color: "#FF9900",
+    textAlign: "center",
   },
   weatherDescription: {
-    position: "absolute",
-    bottom: "30%", // Adjust bottom position to center relative to container
-    fontSize: 14,
-    color: "white",
-    textAlign: "center", // Center text horizontally
-    width: "90%", // Adjust width for better padding
-    zIndex: 1,
+    fontSize: 16,
+    color: "#FFF",
+    textAlign: "center",
+    marginTop: 5,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -457,14 +467,14 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     width: "90%",
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     borderRadius: 10,
     marginVertical: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 5,  
+    elevation: 5,
   },
   gradient: {
     borderRadius: 10,
@@ -486,7 +496,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5, // Add this for Android shadow
-},
+  },
 
   cardTitle: {
     fontSize: 18,

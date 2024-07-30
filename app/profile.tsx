@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,6 +7,7 @@ import profilePic from '../assets/images/profilePic.jpeg'; // Updated profile pi
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
@@ -35,7 +37,7 @@ const ProfilePage = () => {
 
   return (
     <LinearGradient
-      colors={['#007B70', '#00E1CD']}
+      colors={["#007B70", "#00E1CD"]}
       start={[0, 0]}
       end={[1, 0]}
       style={styles.gradientBackground}
@@ -67,9 +69,12 @@ const ProfilePage = () => {
           <Text style={styles.detailLabel}>Email:</Text>
           <Text style={styles.detailText}>{userData.email}</Text>
 
-          <TouchableOpacity style={styles.changePasswordButton} onPress={() => router.push('/resetPw')}>
+          <TouchableOpacity
+            style={styles.changePasswordButton}
+            onPress={() => router.push("/resetPw")}
+          >
             <LinearGradient
-              colors={['#007B70', '#00E1CD']}
+              colors={["#007B70", "#00E1CD"]}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
@@ -81,22 +86,37 @@ const ProfilePage = () => {
       </ScrollView>
 
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/dashboard')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/dashboard")}
+        >
           <FontAwesome5 name="home" size={24} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/map")}
+        >
           <FontAwesome5 name="map" size={24} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/comments")}
+        >
           <FontAwesome5 name="comments" size={24} color="#ccc" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/notifications")}
+        >
           <FontAwesome5 name="bell" size={24} color="#ccc" />
           <View style={styles.notificationBadge}>
             <Text style={styles.notificationText}>6</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/profile")}
+        >
           <FontAwesome5 name="user" size={24} color="#000" />
         </TouchableOpacity>
       </View>
@@ -108,63 +128,72 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
   },
+
+  headerTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    paddingVertical: 10,
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+
   },
   scrollContainer: {
     flexGrow: 1,
   },
   profileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   profilePicContainer: {
     paddingTop: 60,
-    position: 'relative',
+    position: "relative",
   },
   profilePic: {
     width: 120,
     height: 120,
     borderRadius: 60,
     borderWidth: 5,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   editButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: '#fff', // White background for the pen icon
+    backgroundColor: "#fff", // White background for the pen icon
     borderRadius: 20,
     padding: 5,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     marginTop: 10,
   },
   detailsContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
   detailLabel: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007B70',
+    fontWeight: "bold",
+    color: "#007B70",
     marginBottom: 5,
   },
   detailText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
   },
   changePasswordButton: {
@@ -174,37 +203,37 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    position: 'absolute',
+    borderTopColor: "#ccc",
+    position: "absolute",
     bottom: 0,
-    width: '100%',
+    width: "100%",
   },
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   notificationBadge: {
-    position: 'absolute',
+    position: "absolute",
     right: -6,
     top: -5,
-    backgroundColor: 'black',
+    backgroundColor: "black",
     borderRadius: 8,
     padding: 2,
     paddingHorizontal: 5,
   },
   notificationText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
   },
 });
