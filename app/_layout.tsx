@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,22 +26,29 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        theme: colorScheme === 'dark' ? DarkTheme : DefaultTheme,
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: 'Home' }} />
-      <Stack.Screen name="signIn" options={{ title: 'Sign In' }} />
-      <Stack.Screen name="signUp" options={{ title: 'Sign Up' }} />
-      <Stack.Screen name="forgotPw" options={{ title: 'Forgot Password' }} />
-      <Stack.Screen name="emailVerify" options={{ title: 'Email Verification' }} />
-      <Stack.Screen name="resetPw" options={{ title: 'Reset Password' }} />
-      <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
-      <Stack.Screen name="profile" options={{ title: 'Profile' }} />\
-      <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
-      <Stack.Screen name="map" options={{ title: 'Map' }} />
-    </Stack>
+    <AuthProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="index" options={{ title: 'Home' }} />
+        <Stack.Screen name="signIn" options={{ title: 'Sign In' }} />
+        <Stack.Screen name="signUp" options={{ title: 'Sign Up' }} />
+        <Stack.Screen name="forgotPw" options={{ title: 'Forgot Password' }} />
+        <Stack.Screen
+          name="emailVerify"
+          options={{ title: 'Email Verification' }}
+        />
+        <Stack.Screen name="resetPw" options={{ title: 'Reset Password' }} />
+        <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+        <Stack.Screen name="profile" options={{ title: 'Profile' }} />\
+        <Stack.Screen
+          name="notifications"
+          options={{ title: 'Notifications' }}
+        />
+        <Stack.Screen name="map" options={{ title: 'Map' }} />
+      </Stack>
+    </AuthProvider>
   );
 }

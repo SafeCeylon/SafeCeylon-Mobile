@@ -1,29 +1,57 @@
+// pages/signUp.tsx
+
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../utils/api';
 import logo from '../assets/images/Logo3.png';
+import { AuthResponse } from '../types'; // Import type definitions
 
-const SignUpPage = () => {
+const SignUpPage: React.FC = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
-  const [nic, setNic] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
-  const handleSignUp = () => {
-    if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
+  const handleSignUp = async () => {
+    if (!name || !email || !password) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
+
+    try {
+      const response = await api.post<AuthResponse>('/signup', {
+        name,
+        email,
+        password,
+        role: 'USER', // Default role, adjust as needed
+      });
+
+      const { token, user } = response.data;
+
+      // Store the token
+      await AsyncStorage.setItem('token', token);
+
+      Alert.alert('Success', `Welcome, ${user.name}!`);
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Signup Error:', error);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Failed to sign up. Please try again.',
+      );
     }
-    // Add further sign-up logic here
-    Alert.alert('Success', 'Signed up successfully!');
   };
 
   return (
@@ -40,33 +68,17 @@ const SignUpPage = () => {
         </View>
 
         <View style={styles.formContainer}>
+          <Text style={styles.welcomeText}>Create Your Account</Text>
           <Text style={styles.instructionText}>
-            Provide your personal details to register with the system.
+            Join us today! It takes only a few steps
           </Text>
           <TextInput
             style={styles.input}
-            placeholder="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            accessibilityLabel="Full Name"
+            placeholder="Name"
+            value={name}
+            onChangeText={setName}
+            accessibilityLabel="Name"
           />
-          <View style={styles.row}>
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="NIC"
-              value={nic}
-              onChangeText={setNic}
-              accessibilityLabel="NIC"
-            />
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="Mobile Number"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
-              keyboardType="phone-pad"
-              accessibilityLabel="Mobile Number"
-            />
-          </View>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
@@ -84,26 +96,24 @@ const SignUpPage = () => {
             onChangeText={setPassword}
             accessibilityLabel="Password"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm password"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            accessibilityLabel="Confirm Password"
-          />
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <TouchableOpacity style={styles.signInButton} onPress={handleSignUp}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.signUpText}>Sign Up</Text>
+              <Text style={styles.signInText}>Sign Up</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
+            Already have an account?{' '}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push('/signIn')}
+            >
+              Sign In
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -156,6 +166,13 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
+  welcomeText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
   instructionText: {
     fontSize: 16,
     color: '#666',
@@ -178,10 +195,31 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 15,
   },
-  halfInput: {
-    width: '48%',
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  signUpButton: {
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    marginRight: 10,
+    backgroundColor: '#fff',
+  },
+  checkboxChecked: {
+    backgroundColor: '#00E1CD',
+  },
+  checkboxText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  linkText: {
+    fontSize: 16,
+    color: '#00E1CD',
+  },
+  signInButton: {
     width: '100%',
     marginBottom: 15,
   },
@@ -191,7 +229,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  signUpText: {
+  signInText: {
     color: '#fff',
     fontSize: 18,
   },
@@ -199,10 +237,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#00E1CD',
   },
 });
 

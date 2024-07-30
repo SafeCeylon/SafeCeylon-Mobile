@@ -1,23 +1,69 @@
+// pages/signIn.tsx
+
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '@/utils/api';
 import logo from '../assets/images/Logo3.png';
+import { AuthResponse } from '@/types'; // Import type definitions
+import axios from 'axios';
 
-const SignInPage = () => {
+const SignInPage: React.FC = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
-  const handleSignIn = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in both fields.');
-      return;
+  const handleSignIn = async () => {
+    try {
+      // Create the payload for the request
+      const payload = {
+        email,
+        password,
+      };
+
+      // Send a POST request to the login endpoint
+      const response = await axios.post(
+        'http://192.168.1.139:4000/signIn',
+        payload,
+      );
+
+      // Handle success
+      if (response.status === 200) {
+        Alert.alert('Success', 'You have successfully logged in!');
+        // Navigate to the next page or perform other actions
+        router.push('/dashboard'); // Assuming '/dashboard' is your next screen
+      } else {
+        // Handle unexpected status code
+        Alert.alert('Error', 'Unexpected response from the server.');
+      }
+    } catch (error: any) {
+      // Handle error
+      if (error.response) {
+        // Server responded with a status other than 200
+        Alert.alert(
+          'Login Failed',
+          error.response.data.message || 'Invalid email or password',
+        );
+      } else if (error.request) {
+        // Request was made but no response received
+        Alert.alert('Network Error', 'Please check your internet connection.');
+      } else {
+        // Something else caused the error
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
     }
-    // Add further sign-in logic here
-    Alert.alert('Success', 'Signed in successfully!');
-    router.push('/dashboard');
   };
 
   const handleForgot = () => {
@@ -40,7 +86,7 @@ const SignInPage = () => {
         <View style={styles.formContainer}>
           <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.instructionText}>
-            To keep connected with us please login with your personal info
+            To keep connected with us, please log in with your personal info.
           </Text>
           <TextInput
             style={styles.input}
@@ -60,12 +106,14 @@ const SignInPage = () => {
             accessibilityLabel="Password"
           />
           <View style={styles.row}>
-          <TouchableOpacity
+            <TouchableOpacity
               style={styles.checkboxContainer}
               onPress={() => setRememberMe(!rememberMe)}
               accessibilityLabel="Remember Me"
             >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]} />
+              <View
+                style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
+              />
               <Text style={styles.checkboxText}>Remember me?</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleForgot}>
@@ -83,7 +131,13 @@ const SignInPage = () => {
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Don’t have an account? <Text style={styles.linkText} onPress={() => router.push('/signUp')}>Sign Up</Text>
+            Don’t have an account?{' '}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push('/signUp')}
+            >
+              Sign Up
+            </Text>
           </Text>
         </View>
       </ScrollView>
