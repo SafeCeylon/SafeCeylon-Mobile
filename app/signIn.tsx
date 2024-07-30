@@ -21,7 +21,7 @@ const SignInPage = () => {
       email,
       password,
     };
-    axios.post('http://192.168.1.14:4000/login', userData).then((res) => {
+    axios.post('http://192.168.1.44:4000/login', userData).then((res) => {
       if (res.data.status === 404) {
         Alert.alert('Error', 'User not found.');
       } else if (res.data.status === 405) {
