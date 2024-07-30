@@ -13,9 +13,42 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidNic = (nic) => {
+    return nic.length === 10 || nic.length === 12; // Assuming NIC is either 10 or 12 characters long
+  };
+
+  const isValidMobileNumber = (mobileNumber) => {
+    return mobileNumber.length === 10; // Assuming mobile number is 10 digits
+  };
+
+  const isValidPassword = (password) => {
+    return password.length >= 6; // Password must be at least 6 characters
+  };
+
   const handleSignUp = () => {
     if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      Alert.alert('Error', 'Invalid email format.');
+      return;
+    }
+    if (!isValidNic(nic)) {
+      Alert.alert('Error', 'Invalid NIC format.');
+      return;
+    }
+    if (!isValidMobileNumber(mobileNumber)) {
+      Alert.alert('Error', 'Mobile number must be 10 digits.');
+      return;
+    }
+    if (!isValidPassword(password)) {
+      Alert.alert('Error', 'Password must be at least 6 characters.');
       return;
     }
     if (password !== confirmPassword) {
