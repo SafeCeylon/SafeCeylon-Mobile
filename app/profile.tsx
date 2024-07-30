@@ -7,11 +7,30 @@ import profilePic from '../assets/images/profilePic.jpeg'; // Updated profile pi
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker'; // Import expo-image-picker
 
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
+  // const [profilePicture, setProfilePic] = useState(null);
   const router = useRouter();
+
+  // const selectPhoto = async () => {
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [1, 1],
+  //     quality: 1,
+  //     base64: true,
+  //     freeformCrop: true,
+  //   });
+
+  //   if (!result.canceled) {
+  //     console.log(result.assets[0]);
+  //     const data= <Image source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }} style={{ width: 200, height: 200 }}/>
+  //     setProfilePic(data);
+  //   }
+  // };
 
   async function getData() {
     try {
@@ -58,7 +77,7 @@ const ProfilePage = () => {
           <Text style={styles.detailText}>Colombo, Sri Lanka</Text>
 
           <Text style={styles.detailLabel}>Address:</Text>
-          <Text style={styles.detailText}>123, Main Street, Colombo</Text>
+          <Text style={styles.detailText}>No 05, Kottawa, Pannipitiya</Text>
 
           <Text style={styles.detailLabel}>NIC:</Text>
           <Text style={styles.detailText}>{userData.nic}</Text>
@@ -80,6 +99,17 @@ const ProfilePage = () => {
               style={styles.gradientButton}
             >
               <Text style={styles.buttonText}>Change Password</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.changePasswordButton} onPress={() => router.push('/signIn')}>
+            <LinearGradient
+              colors={['#007B70', '#00E1CD']}
+              start={[0, 0]}
+              end={[1, 0]}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.buttonText}>Logout</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
