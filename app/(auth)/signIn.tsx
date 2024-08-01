@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import logo from '../assets/images/Logo3.png';
+import logo from '@/assets/images/Logo3.png';
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
-  const [nic, setNic] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSignUp = () => {
-    if (!fullName || !nic || !mobileNumber || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields.');
+  const handleSignIn = () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-    // Add further sign-up logic here
-    Alert.alert('Success', 'Signed up successfully!');
+    // Add further sign-in logic here
+    Alert.alert('Success', 'Signed in successfully!');
+    router.push('/home');
+  };
+
+  const handleForgot = () => {
+    router.push('/forgotPw');
   };
 
   return (
@@ -36,37 +43,14 @@ const SignUpPage = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
           <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>Sign In</Text>
         </View>
 
         <View style={styles.formContainer}>
+          <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.instructionText}>
-            Provide your personal details to register with the system.
+            To keep connected with us please login with your personal info
           </Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            accessibilityLabel="Full Name"
-          />
-          <View style={styles.row}>
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="NIC"
-              value={nic}
-              onChangeText={setNic}
-              accessibilityLabel="NIC"
-            />
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="Mobile Number"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
-              keyboardType="phone-pad"
-              accessibilityLabel="Mobile Number"
-            />
-          </View>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
@@ -84,26 +68,39 @@ const SignUpPage = () => {
             onChangeText={setPassword}
             accessibilityLabel="Password"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm password"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            accessibilityLabel="Confirm Password"
-          />
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.checkboxContainer}
+              onPress={() => setRememberMe(!rememberMe)}
+              accessibilityLabel="Remember Me"
+            >
+              <View
+                style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
+              />
+              <Text style={styles.checkboxText}>Remember me?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleForgot}>
+              <Text style={styles.linkText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.signUpText}>Sign Up</Text>
+              <Text style={styles.signInText}>Sign in</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
+            Don’t have an account?{' '}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push('/signUp')}
+            >
+              Sign Up
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -156,6 +153,13 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
   },
+  welcomeText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
   instructionText: {
     fontSize: 16,
     color: '#666',
@@ -178,10 +182,31 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 15,
   },
-  halfInput: {
-    width: '48%',
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  signUpButton: {
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    marginRight: 10,
+    backgroundColor: '#fff',
+  },
+  checkboxChecked: {
+    backgroundColor: '#00E1CD',
+  },
+  checkboxText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  linkText: {
+    fontSize: 16,
+    color: '#00E1CD',
+  },
+  signInButton: {
     width: '100%',
     marginBottom: 15,
   },
@@ -191,7 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  signUpText: {
+  signInText: {
     color: '#fff',
     fontSize: 18,
   },
@@ -200,10 +225,6 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-  linkText: {
-    fontSize: 16,
-    color: '#00E1CD',
-  },
 });
 
-export default SignUpPage;
+export default SignInPage;

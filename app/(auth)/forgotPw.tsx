@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Image,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import logo from '@/assets/images/Logo3.png';
 
+const ForgotPasswordPage = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
 
-import logo from '../assets/images/Logo3.png';
-import { router } from 'expo-router';
-
-const ResetPasswordPage = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const handleResetPassword = () => {
-    if (!password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in both fields.');
+  const handlePasswordReset = () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address.');
       return;
     }
+    // Add further password reset logic here
+    Alert.alert('Success', 'Password reset link sent!');
 
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-
-    // Add further reset password logic here
-    Alert.alert('Success', 'Password reset successfully! Please sign in.');
-    router.push('/signIn');
+    // Redirect to email verification page
+    router.push('/emailVerify');
   };
 
   return (
@@ -35,42 +38,45 @@ const ResetPasswordPage = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
-            <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Reset Password</Text>
+          <Image source={logo} style={styles.logo} />
+          <Text style={styles.title}>Forgot Password</Text>
         </View>
 
         <View style={styles.formContainer}>
           <Text style={styles.instructionText}>
-            Your new password must be different from previous used passwords.
+            Enter the email associated with your account and we'll send an email
+            with instructions to reset your password.
           </Text>
           <TextInput
             style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            accessibilityLabel="Password"
+            placeholder="Email Address"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+            accessibilityLabel="Email Address"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            accessibilityLabel="Confirm Password"
-          />
-          <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={handlePasswordReset}
+          >
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
               end={[1, 0]}
               style={styles.gradientButton}
             >
-              <Text style={styles.resetText}>Reset Password</Text>
+              <Text style={styles.resetText}>Send Instructions</Text>
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Already have an account? <Text style={styles.linkText} onPress={() => router.push('/signIn')}>Sign In</Text>
+            Already have an account?{' '}
+            <Text
+              style={styles.linkText}
+              onPress={() => router.push('/signIn')}
+            >
+              Sign In
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -134,11 +140,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   resetButton: {
     width: '100%',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   gradientButton: {
     paddingVertical: 15,
@@ -161,4 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ResetPasswordPage;
+export default ForgotPasswordPage;

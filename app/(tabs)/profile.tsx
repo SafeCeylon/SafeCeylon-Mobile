@@ -1,8 +1,15 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
-import profilePic from '../assets/images/profilePic.jpeg'; // Updated profile picture path
+import profilePic from '@/assets/images/profilePic.jpeg'; // Updated profile picture path
 import { useRouter } from 'expo-router';
 
 const ProfilePage = () => {
@@ -15,8 +22,6 @@ const ProfilePage = () => {
       end={[1, 0]}
       style={styles.gradientBackground}
     >
-      
-
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileSection}>
           <View style={styles.profilePicContainer}>
@@ -44,7 +49,10 @@ const ProfilePage = () => {
           <Text style={styles.detailLabel}>Email:</Text>
           <Text style={styles.detailText}>gayathra@example.com</Text>
 
-          <TouchableOpacity style={styles.changePasswordButton} onPress={() => router.push('/resetPw')}>
+          <TouchableOpacity
+            style={styles.changePasswordButton}
+            onPress={() => router.push('/resetPw')}
+          >
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
               start={[0, 0]}
@@ -56,27 +64,6 @@ const ProfilePage = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/dashboard')}>
-          <FontAwesome5 name="home" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
-          <FontAwesome5 name="map" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
-          <FontAwesome5 name="bell" size={24} color="#ccc" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>6</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
-          <FontAwesome5 name="user" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
     </LinearGradient>
   );
 };

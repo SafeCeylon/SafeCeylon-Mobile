@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -10,31 +16,36 @@ const NotificationPage = () => {
   const notifications = [
     {
       title: 'Severe Weather Alert',
-      description: 'A severe weather warning has been issued for your area. Please take necessary precautions.',
+      description:
+        'A severe weather warning has been issued for your area. Please take necessary precautions.',
       date: 'July 27, 2024',
       severity: 'red',
     },
     {
       title: 'High Wind Warning',
-      description: 'Strong winds expected. Secure loose objects and avoid unnecessary travel.',
+      description:
+        'Strong winds expected. Secure loose objects and avoid unnecessary travel.',
       date: 'July 26, 2024',
       severity: 'amber',
     },
     {
       title: 'Flood Watch',
-      description: 'Heavy rains may cause flooding. Be prepared and stay informed.',
+      description:
+        'Heavy rains may cause flooding. Be prepared and stay informed.',
       date: 'July 25, 2024',
       severity: 'yellow',
     },
     {
       title: 'Scheduled Maintenance',
-      description: 'Maintenance is scheduled for tonight. Service may be intermittent.',
+      description:
+        'Maintenance is scheduled for tonight. Service may be intermittent.',
       date: 'July 23, 2024',
       severity: 'grey',
     },
     {
       title: 'Service Update',
-      description: 'Updates have been made to the system. Please review the changes.',
+      description:
+        'Updates have been made to the system. Please review the changes.',
       date: 'July 22, 2024',
       severity: 'grey',
     },
@@ -56,10 +67,19 @@ const NotificationPage = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {notifications.map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
-              <View style={[styles.severityBar, { backgroundColor: getSeverityColor(notification.severity) }]} />
+              <View
+                style={[
+                  styles.severityBar,
+                  { backgroundColor: getSeverityColor(notification.severity) },
+                ]}
+              />
               <View style={styles.notificationContent}>
-                <Text style={styles.notificationTitle}>{notification.title}</Text>
-                <Text style={styles.notificationDescription}>{notification.description}</Text>
+                <Text style={styles.notificationTitle}>
+                  {notification.title}
+                </Text>
+                <Text style={styles.notificationDescription}>
+                  {notification.description}
+                </Text>
                 <Text style={styles.notificationDate}>{notification.date}</Text>
               </View>
               <TouchableOpacity
@@ -72,32 +92,11 @@ const NotificationPage = () => {
           ))}
         </ScrollView>
       </View>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/dashboard')}>
-          <FontAwesome5 name="home" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
-          <FontAwesome5 name="map" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
-          <FontAwesome5 name="bell" size={24} color="#000" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>6</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
-          <FontAwesome5 name="user" size={24} color="#ccc" />
-        </TouchableOpacity>
-      </View>
     </LinearGradient>
   );
 };
 
-const getSeverityColor = (severity) => {
+const getSeverityColor = (severity: any) => {
   switch (severity) {
     case 'red':
       return '#FF0000'; // Red for severe threat

@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import MapView from 'react-native-maps'; // Ensure react-native-maps is installed
 import { useRouter } from 'expo-router';
@@ -7,7 +15,9 @@ import { useRouter } from 'expo-router';
 const MapPage: React.FC = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState('');
-  const [selectedReports, setSelectedReports] = useState<{ [key: string]: boolean }>({
+  const [selectedReports, setSelectedReports] = useState<{
+    [key: string]: boolean;
+  }>({
     Flood: false,
     Hurricane: false,
     Landslide: false,
@@ -60,10 +70,7 @@ const MapPage: React.FC = () => {
           value={searchText}
           onChangeText={handleSearchChange}
         />
-        <TouchableOpacity
-          style={styles.searchButton}
-          onPress={performSearch}
-        >
+        <TouchableOpacity style={styles.searchButton} onPress={performSearch}>
           <FontAwesome5 name="search" size={18} color="#007B70" />
         </TouchableOpacity>
       </View>
@@ -78,7 +85,10 @@ const MapPage: React.FC = () => {
               <Text style={styles.checkboxLabel}>Shelters</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={toggleReportDropdown} style={styles.reportCheckbox}>
+          <TouchableOpacity
+            onPress={toggleReportDropdown}
+            style={styles.reportCheckbox}
+          >
             <Text style={styles.checkboxLabel}>Reports</Text>
             <FontAwesome5
               name={showReportDropdown ? 'chevron-up' : 'chevron-down'}
@@ -107,7 +117,10 @@ const MapPage: React.FC = () => {
         )}
       </View>
 
-      <TouchableOpacity style={styles.disasterButton} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.disasterButton}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={styles.disasterButtonText}>Add Disaster</Text>
       </TouchableOpacity>
 
@@ -120,33 +133,15 @@ const MapPage: React.FC = () => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Add Disaster Report</Text>
             {/* Add disaster report form or content here */}
-            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/dashboard')}>
-          <FontAwesome5 name="home" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/map')}>
-          <FontAwesome5 name="map" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/comments')}>
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/notifications')}>
-          <FontAwesome5 name="bell" size={24} color="#ccc" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>6</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/profile')}>
-          <FontAwesome5 name="user" size={24} color="#ccc" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
