@@ -10,11 +10,6 @@ import {
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import images from '@/constants/Images';
-import logo from '@/assets/images/Logo3.png';
-import backgroundImage from '@/assets/images/defaultBGclipped.png';
-import weatherImage from '@/assets/images/weather.png';
-import disasterImage from '@/assets/images/disaster.png';
-import predictionsImage from '@/assets/images/predictions.png';
 import { useRouter } from 'expo-router';
 import moment from 'moment';
 
@@ -104,7 +99,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.cardContainer}>
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/weather')}
+          onPress={() => router.push('/home/weather')}
         >
           <Image source={images.weather} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -121,7 +116,7 @@ const HomeScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/disasters')}
+          onPress={() => router.push('/home/disasters')}
         >
           <Image source={images.disaster} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -138,7 +133,7 @@ const HomeScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/disaster-predictions')}
+          onPress={() => router.push('/home/disaster-predictions')}
         >
           <Image source={images.predictions} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -156,7 +151,7 @@ const HomeScreen: React.FC = () => {
 
       <TouchableOpacity
         style={styles.sosButton}
-        onPress={() => router.push('sos')}
+        onPress={() => router.push('/home/sos')}
       >
         <Text style={styles.sosText}>SOS</Text>
       </TouchableOpacity>

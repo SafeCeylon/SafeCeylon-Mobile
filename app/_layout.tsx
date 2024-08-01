@@ -36,6 +36,7 @@ export default function RootLayout() {
         options={{ title: 'Disaster-Predictions' }}
       />
       <Stack.Screen name="sos" options={{ title: 'Sos' }} />
+      <Stack.Screen name="disasters" options={{ title: 'Disasters' }} />
     </Stack>
   );
 }

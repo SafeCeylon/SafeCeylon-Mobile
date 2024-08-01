@@ -12,7 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
-import mail from '@/assets/images/mail.png';
+import images from '@/constants/Images';
 
 const VerificationMailPage = () => {
   const router = useRouter();
@@ -28,7 +28,7 @@ const VerificationMailPage = () => {
         <View style={styles.content}>
           <View style={styles.iconContainer}>
             <View style={styles.iconPlaceholder}>
-              <Image source={mail} style={styles.icon} />
+              <Image source={images.mail} style={styles.icon} />
             </View>
           </View>
           <Text style={styles.title}>Check your Mail</Text>

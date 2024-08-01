@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 const TabsLayout = () => {
   return (
     <>
+      <StatusBar style="auto" />
       <Tabs
         screenOptions={{
           tabBarStyle: {

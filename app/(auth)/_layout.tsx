@@ -15,3 +15,5 @@ const AuthLayout = () => {
     </Stack>
   );
 };
+
+export default AuthLayout;
