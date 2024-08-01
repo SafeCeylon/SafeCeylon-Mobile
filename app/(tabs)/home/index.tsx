@@ -18,11 +18,11 @@ const { width, height } = Dimensions.get('window');
 const HomeScreen: React.FC = () => {
   const router = useRouter();
   const [weather, setWeather] = useState({
-    temperature: '',
+    temperature: '27',
     condition: '',
-    precipitation: '',
-    humidity: '',
-    wind: '',
+    precipitation: '3.7',
+    humidity: '83',
+    wind: '33',
   });
 
   const [dateTime, setDateTime] = useState({
@@ -32,23 +32,23 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     // Fetch weather data using Google Weather API
-    const fetchWeather = async () => {
-      try {
-        const response = await fetch('YOUR_GOOGLE_WEATHER_API_URL');
-        const data = await response.json();
-        setWeather({
-          temperature: `${data.current.temp_c}`,
-          condition: data.current.condition.text,
-          precipitation: `${data.current.precip_mm}`,
-          humidity: `${data.current.humidity}`,
-          wind: `${data.current.wind_kph}`,
-        });
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-      }
-    };
+    // const fetchWeather = async () => {
+    //   try {
+    //     const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
+    //     const data = await response.json();
+    //     setWeather({
+    //       temperature: `${data.current.temp_c}`,
+    //       condition: data.current.condition.text,
+    //       precipitation: `${data.current.precip_mm}`,
+    //       humidity: `${data.current.humidity}`,
+    //       wind: `${data.current.wind_kph}`,
+    //     });
+    //   } catch (error) {
+    //     console.error("Error fetching weather data:", error);
+    //   }
+    // };
 
-    fetchWeather();
+    // fetchWeather();
 
     const intervalId = setInterval(() => {
       setDateTime({
@@ -76,7 +76,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.weatherInfoContainer}>
             <Image source={images.weather} style={styles.weatherIcon} />
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature} Â°C</Text>
+              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
               <Text style={styles.weatherCondition}>{weather.condition}</Text>
               <Text style={styles.weatherDetails}>
                 Precipitation: {weather.precipitation} mm
@@ -206,8 +206,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   weatherIcon: {
-    width: width * 0.1,
-    height: width * 0.1,
+    width: width * 0.25,
+    height: width * 0.25,
     marginRight: 10,
   },
   weatherDetailsContainer: {
@@ -247,13 +247,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
 
-    marginTop: height * 0.1, // Adjust this value to position the cards correctly below the weather container
+    marginTop: height * 0.09, // Adjust this value to position the cards correctly below the weather container
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    // marginVertical: 10,
+    marginVertical: 5,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -262,7 +262,6 @@ const styles = StyleSheet.create({
     elevation: 5, // Add this for Android shadow
     width: '90%',
     height: height * 0.15,
-    padding: 0,
   },
   cardImage: {
     width: '100%',
@@ -319,7 +318,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     borderRadius: 15,
     paddingVertical: 5,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     borderWidth: 2,
     borderColor: '#fff',
   },

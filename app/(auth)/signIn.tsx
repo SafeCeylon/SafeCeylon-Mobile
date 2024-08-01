@@ -12,6 +12,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import logo from '@/assets/images/Logo3.png';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInPage = () => {
   const router = useRouter();
@@ -27,6 +29,30 @@ const SignInPage = () => {
     // Add further sign-in logic here
     Alert.alert('Success', 'Signed in successfully!');
     router.push('/home');
+
+    const userData = {
+      email,
+      password,
+    };
+    axios
+      .post('http://192.168.1.24:4000/login', userData)
+      .then((res) => {
+        if (res.data.status === 404) {
+          Alert.alert('Error', 'User not found.');
+        } else if (res.data.status === 405) {
+          Alert.alert('Error', 'Invalid Password.');
+        } else {
+          Alert.alert('Success', 'Logged in successfully.');
+          AsyncStorage.setItem('token', res.data.token);
+          if (rememberMe) {
+            //remeber me data
+          }
+          router.push('/dashboard');
+        }
+      })
+      .catch((err) => {
+        Alert.alert('Error', err.message);
+      });
   };
 
   const handleForgot = () => {
