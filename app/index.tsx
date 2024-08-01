@@ -11,8 +11,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 // Replace with your actual logo
-import logo from '@/assets/images/Logo2.png';
-import backgroundImage from '@/assets/images/HomeBG.png';
 import images from '@/constants/Images';
 
 const LandingPage = () => {
@@ -29,7 +27,7 @@ const LandingPage = () => {
   return (
     <ImageBackground source={images.homeBG} style={styles.background}>
       <View style={styles.container}>
-        <Image source={logo} style={styles.logo} />
+        <Image source={images.logo2} style={styles.logo} />
         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
           <LinearGradient
             colors={['#007B70', '#00E1CD']}

@@ -206,7 +206,7 @@ const DisasterPrediction: React.FC = () => {
     },
   };
 
-  const getAirQualityInfo = (airPurity) => {
+  const getAirQualityInfo = (airPurity: number) => {
     if (airPurity <= 50) {
       return { color: '#00E400', level: 'Good' }; // Green - Good
     } else if (airPurity <= 100) {

@@ -8,7 +8,8 @@ const DisastersLayout = () => {
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="donations" options={{ headerShown: false }} />
+      <Stack.Screen name="monetarydono" options={{ headerShown: false }} />
+      <Stack.Screen name="suppliesdono" options={{ headerShown: false }} />
     </Stack>
   );
 };

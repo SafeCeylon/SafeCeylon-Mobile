@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import logo from '@/assets/images/Logo3.png';
 import axios from 'axios';
+
+import images from '@/constants/Images';
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -24,20 +25,20 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isValidEmail = (email) => {
+  const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const isValidNic = (nic) => {
+  const isValidNic = (nic: string) => {
     return nic.length === 10 || nic.length === 12; // Assuming NIC is either 10 or 12 characters long
   };
 
-  const isValidMobileNumber = (mobileNumber) => {
+  const isValidMobileNumber = (mobileNumber: string) => {
     return mobileNumber.length === 10; // Assuming mobile number is 10 digits
   };
 
-  const isValidPassword = (password) => {
+  const isValidPassword = (password: string) => {
     return password.length >= 6; // Password must be at least 6 characters
   };
 
@@ -83,7 +84,7 @@ const SignUpPage = () => {
       password,
     };
     axios
-      .post('http://192.168.1.24:4000/signup', userData)
+      .post('http://192.168.8.103:4000/signup', userData)
       .then((response) => {
         if (response.data.status === 409) {
           Alert.alert('Error', 'User already exists.');
@@ -109,7 +110,7 @@ const SignUpPage = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
-          <Image source={logo} style={styles.logo} />
+          <Image source={images.logo3} style={styles.logo} />
           <Text style={styles.title}>Sign Up</Text>
         </View>
 
@@ -153,7 +154,6 @@ const SignUpPage = () => {
           <TextInput
             style={styles.input}
             placeholder="Home Address"
-            keyboardType="home-address"
             autoCapitalize="none"
             value={address}
             onChangeText={setAddress}

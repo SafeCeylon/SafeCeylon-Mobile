@@ -9,13 +9,10 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import disasterImage from '@/assets/images/disaster.png';
-import mapIcon from '@/assets/images/icons/Map.png';
-import victimIcon from '@/assets/images/icons/Victim.png';
-import donateIcon from '@/assets/images/icons/Donate.png';
-import images from '@/constants/Images';
 import { useRouter } from 'expo-router';
-import { FontAwesome5 } from '@expo/vector-icons'; // Import FontAwesome5 icons
+
+import images from '@/constants/Images';
+import icons from '@/constants/Icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,7 +32,7 @@ const DisastersScreen: React.FC = () => {
 
       <View style={styles.disasterImageContainer}>
         <View style={styles.imageWrapper}>
-          <Image source={disasterImage} style={styles.disasterImage} />
+          <Image source={images.disaster} style={styles.disasterImage} />
           <View style={styles.textOverlay}>
             <Text style={styles.disastersHeaderText}>Disasters</Text>
             <Text style={styles.disastersHeaderSubText}>
@@ -59,11 +56,11 @@ const DisastersScreen: React.FC = () => {
                 onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -79,11 +76,11 @@ const DisastersScreen: React.FC = () => {
                 onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -99,11 +96,11 @@ const DisastersScreen: React.FC = () => {
                 onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -111,48 +108,12 @@ const DisastersScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.donateButton}
-          onPress={() => router.push('/donations')}
+          onPress={() => router.push('/home/disasters/donations')}
         >
           <Text style={styles.donateButtonText}>Donate</Text>
-          <Image source={donateIcon} style={styles.donateIcon} />
+          <Image source={icons.Donate} style={styles.donateIcon} />
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/dashboard')}
-        >
-          <FontAwesome5 name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/map')}
-        >
-          <FontAwesome5 name="map" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/comments')}
-        >
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/notifications')}
-        >
-          <FontAwesome5 name="bell" size={24} color="#ccc" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/profile')}
-        >
-          <FontAwesome5 name="user" size={24} color="#ccc" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };

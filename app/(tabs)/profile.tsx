@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,22 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
-import profilePic from '@/assets/images/profilePic.jpeg'; // Updated profile picture path
+// Updated profile picture path
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker'; // Import expo-image-picker
 
+import profilePic from '@/assets/images/profilePic.jpeg';
+import images from '@/constants/Images';
+
 const ProfilePage = () => {
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState({
+    name: '',
+    nic: '',
+    mobileNumber: '',
+    email: '',
+  });
   // const [profilePicture, setProfilePic] = useState(null);
   const router = useRouter();
 
@@ -40,7 +48,7 @@ const ProfilePage = () => {
   async function getData() {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post('http://192.168.1.24:4000/userdata', {
+      const response = await axios.post('http://192.168.8.103:4000/userdata', {
         token: token,
       });
       setUserData(response.data.data);
@@ -71,7 +79,7 @@ const ProfilePage = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileSection}>
           <View style={styles.profilePicContainer}>
-            <Image source={profilePic} style={styles.profilePic} />
+            <Image source={images.profilePic} style={styles.profilePic} />
             <TouchableOpacity style={styles.editButton}>
               <FontAwesome5 name="pen" size={20} color="#007B70" />
             </TouchableOpacity>

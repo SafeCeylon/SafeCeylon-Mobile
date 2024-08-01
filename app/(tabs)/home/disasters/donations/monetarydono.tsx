@@ -10,90 +10,131 @@ import {
   ImageBackground,
   TextInput,
 } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { CheckBox } from 'react-native-elements';
-import logo from '@/assets/images/Logo3.png';
-import backgroundImage from '@/assets/images/defaultBGclipped.png';
-import disasterImage from '@/assets/images/disaster.png';
 import { useRouter } from 'expo-router';
-import { FontAwesome5 } from '@expo/vector-icons';
+
+import images from '@/constants/Images';
+import icons from '@/constants/Icons';
 
 const { width, height } = Dimensions.get('window');
 
 const DonationsScreen: React.FC = () => {
   const router = useRouter();
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [otherItem, setOtherItem] = useState('');
-  const [number, setNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
+  const [selectedAmount, setSelectedAmount] = useState('');
+  const [otherAmount, setOtherAmount] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [expireDate, setExpireDate] = useState('');
+  const [cvc, setCvc] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const handleAmountPress = (amount: string) => {
+    setSelectedAmount(amount);
+    setOtherAmount('');
+  };
+
+  const handleOtherAmountChange = (amount: string) => {
+    setOtherAmount(amount);
+    setSelectedAmount('');
+  };
 
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={backgroundImage}
+        source={images.deafultBGClipped}
         style={styles.headerBackgroundImage}
       >
         <View style={styles.headerContent}>
-          <Image source={logo} style={styles.logo} />
+          <Image source={images.logo3} style={styles.logo} />
         </View>
       </ImageBackground>
 
       <View style={styles.disasterImageContainer}>
         <View style={styles.imageWrapper}>
-          <Image source={disasterImage} style={styles.disasterImage} />
+          <Image source={images.disaster} style={styles.disasterImage} />
           <View style={styles.textOverlay}>
-            <Text style={styles.disastersHeaderText}>Supplies Donations</Text>
+            <Text style={styles.disastersHeaderText}>Monetary Donations</Text>
             <Text style={styles.disastersHeaderSubText}>
-              Donating supplies is a tangible way to make a difference and
-              provide necessary aid to those affected by disasters.
+              Your donation can make a significant impact in helping those
+              affected by disasters to recover and rebuild their lives.
             </Text>
           </View>
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.formContainer}>
-          <Text style={styles.formHeader}>Select Items to Donate</Text>
-          <DropDownPicker
-            items={[
-              { label: 'Food', value: 'food' },
-              { label: 'Water', value: 'water' },
-              { label: 'Clothing', value: 'clothing' },
-              { label: 'Medical Supplies', value: 'medical_supplies' },
-              { label: 'Blankets', value: 'blankets' },
-              { label: 'Hygiene Products', value: 'hygiene_products' },
-            ]}
-            value={selectedItem}
-            containerStyle={styles.dropdownContainer}
-            style={styles.dropdown}
-            dropDownStyle={styles.dropdown}
-            onChangeValue={setSelectedItem}
-          />
+          <Text style={styles.formHeader}>Select a Donation Amount [LKR]</Text>
+          <View style={styles.amountContainer}>
+            <TouchableOpacity
+              style={[
+                styles.amountButton,
+                selectedAmount === '5000' && styles.selectedAmountButton,
+              ]}
+              onPress={() => handleAmountPress('5000')}
+            >
+              <Text style={styles.amountButtonText}>LKR 5000</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.amountButton,
+                selectedAmount === '10000' && styles.selectedAmountButton,
+              ]}
+              onPress={() => handleAmountPress('10000')}
+            >
+              <Text style={styles.amountButtonText}>LKR 10000</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.amountButton,
+                selectedAmount === '15000' && styles.selectedAmountButton,
+              ]}
+              onPress={() => handleAmountPress('15000')}
+            >
+              <Text style={styles.amountButtonText}>LKR 15000</Text>
+            </TouchableOpacity>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="Other"
-            value={otherItem}
-            onChangeText={setOtherItem}
+            keyboardType="numeric"
+            value={otherAmount}
+            onChangeText={handleOtherAmountChange}
           />
-          <Text style={styles.formHeader}>Donation Drop-off Locations:</Text>
+          <Text style={styles.formHeader}>
+            Set up your credit or debit card
+          </Text>
           <TextInput
             style={styles.input}
-            placeholder="Number"
-            value={number}
-            onChangeText={setNumber}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            value={address}
-            onChangeText={setAddress}
+            placeholder="First Name"
+            value={firstName}
+            onChangeText={setFirstName}
           />
           <TextInput
             style={styles.input}
-            placeholder="City"
-            value={city}
-            onChangeText={setCity}
+            placeholder="Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Card Number"
+            keyboardType="numeric"
+            value={cardNumber}
+            onChangeText={setCardNumber}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Expire Date"
+            value={expireDate}
+            onChangeText={setExpireDate}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="CVC"
+            keyboardType="numeric"
+            value={cvc}
+            onChangeText={setCvc}
           />
           <CheckBox
             title="Agree to Terms & Conditions"
@@ -109,42 +150,6 @@ const DonationsScreen: React.FC = () => {
           <Text style={styles.contactLink}>Contact Us</Text>
         </Text>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/dashboard')}
-        >
-          <FontAwesome5 name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/map')}
-        >
-          <FontAwesome5 name="map" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/comments')}
-        >
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/notifications')}
-        >
-          <FontAwesome5 name="bell" size={24} color="#ccc" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push('/profile')}
-        >
-          <FontAwesome5 name="user" size={24} color="#ccc" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -233,6 +238,31 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
+  amountContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 10,
+  },
+  amountButton: {
+    backgroundColor: '#FF9900',
+    borderRadius: 20,
+    padding: 10,
+    width: '30%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  selectedAmountButton: {
+    backgroundColor: '#FF6600',
+  },
+  amountButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   input: {
     width: '90%',
     height: 40,
@@ -241,16 +271,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     marginVertical: 10,
-  },
-  dropdownContainer: {
-    width: '90%',
-    marginVertical: 10,
-  },
-  dropdown: {
-    backgroundColor: '#fafafa',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 20,
   },
   donateButton: {
     backgroundColor: '#FF9900',

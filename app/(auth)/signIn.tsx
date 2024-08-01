@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import logo from '@/assets/images/Logo3.png';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import images from '@/constants/Images';
 
 const SignInPage = () => {
   const router = useRouter();
@@ -26,16 +27,13 @@ const SignInPage = () => {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
-    // Add further sign-in logic here
-    Alert.alert('Success', 'Signed in successfully!');
-    router.push('/home');
 
     const userData = {
       email,
       password,
     };
     axios
-      .post('http://192.168.1.24:4000/login', userData)
+      .post('http://192.168.8.103:4000/login', userData)
       .then((res) => {
         if (res.data.status === 404) {
           Alert.alert('Error', 'User not found.');
@@ -47,7 +45,7 @@ const SignInPage = () => {
           if (rememberMe) {
             //remeber me data
           }
-          router.push('/dashboard');
+          router.push('/home');
         }
       })
       .catch((err) => {
@@ -68,7 +66,7 @@ const SignInPage = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
-          <Image source={logo} style={styles.logo} />
+          <Image source={images.logo3} style={styles.logo} />
           <Text style={styles.title}>Sign In</Text>
         </View>
 
