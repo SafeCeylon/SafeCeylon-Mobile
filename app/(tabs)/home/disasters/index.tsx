@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -8,17 +8,13 @@ import {
   ImageBackground,
   Dimensions,
   ScrollView,
-} from "react-native";
-import logo from "../assets/images/Logo3.png";
-import disasterImage from "../assets/images/disaster.png";
-import backgroundImage from "../assets/images/defaultBGclipped.png";
-import mapIcon from "../assets/images/icons/Map.png";
-import victimIcon from "../assets/images/icons/Victim.png";
-import donateIcon from "../assets/images/icons/Donate.png";
-import { useRouter } from "expo-router";
-import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 icons
+} from 'react-native';
+import { useRouter } from 'expo-router';
 
-const { width, height } = Dimensions.get("window");
+import images from '@/constants/Images';
+import icons from '@/constants/Icons';
+
+const { width, height } = Dimensions.get('window');
 
 const DisastersScreen: React.FC = () => {
   const router = useRouter();
@@ -26,17 +22,17 @@ const DisastersScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={backgroundImage}
+        source={images.deafultBGClipped}
         style={styles.headerBackgroundImage}
       >
         <View style={styles.headerContent}>
-          <Image source={logo} style={styles.logo} />
+          <Image source={images.logo3} style={styles.logo} />
         </View>
       </ImageBackground>
 
       <View style={styles.disasterImageContainer}>
         <View style={styles.imageWrapper}>
-          <Image source={disasterImage} style={styles.disasterImage} />
+          <Image source={images.disaster} style={styles.disasterImage} />
           <View style={styles.textOverlay}>
             <Text style={styles.disastersHeaderText}>Disasters</Text>
             <Text style={styles.disastersHeaderSubText}>
@@ -52,19 +48,19 @@ const DisastersScreen: React.FC = () => {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Landslides</Text>
             <Text style={styles.cardStatus}>
-              On Going Status :{" "}
+              On Going Status :{' '}
               <Text style={styles.statusAvailable}>available</Text>
             </Text>
             <View style={styles.cardFooter}>
               <TouchableOpacity
-                onPress={() => router.push("/map")}
+                onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -72,19 +68,19 @@ const DisastersScreen: React.FC = () => {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Floods</Text>
             <Text style={styles.cardStatus}>
-              On Going Status :{" "}
+              On Going Status :{' '}
               <Text style={styles.statusAvailable}>available</Text>
             </Text>
             <View style={styles.cardFooter}>
               <TouchableOpacity
-                onPress={() => router.push("/map")}
+                onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -92,65 +88,32 @@ const DisastersScreen: React.FC = () => {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Hurricanes</Text>
             <Text style={styles.cardStatus}>
-              On Going Status :{" "}
+              On Going Status :{' '}
               <Text style={styles.statusUnavailable}>unavailable</Text>
             </Text>
             <View style={styles.cardFooter}>
               <TouchableOpacity
-                onPress={() => router.push("/map")}
+                onPress={() => router.push('/map')}
                 style={styles.mapIconWrapper}
               >
-                <Image source={mapIcon} style={styles.icon} />
+                <Image source={icons.Map} style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.victimButton}>
                 <Text style={styles.victimButtonText}>I am a victim</Text>
-                <Image source={victimIcon} style={styles.victimIcon} />
+                <Image source={icons.Victim} style={styles.victimIcon} />
               </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.donateButton} onPress={() => router.push("/donations")}>
+        <TouchableOpacity
+          style={styles.donateButton}
+          onPress={() => router.push('/home/disasters/donations')}
+        >
           <Text style={styles.donateButtonText}>Donate</Text>
-          <Image source={donateIcon} style={styles.donateIcon} />
+          <Image source={icons.Donate} style={styles.donateIcon} />
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/dashboard")}
-        >
-          <FontAwesome5 name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/map")}
-        >
-          <FontAwesome5 name="map" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/comments")}
-        >
-          <FontAwesome5 name="comments" size={24} color="#ccc" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/notifications")}
-        >
-          <FontAwesome5 name="bell" size={24} color="#ccc" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>4</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/profile")}
-        >
-          <FontAwesome5 name="user" size={24} color="#ccc" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -158,87 +121,87 @@ const DisastersScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
   },
   headerBackgroundImage: {
-    width: "100%",
+    width: '100%',
     height: height * 0.25,
-    alignItems: "center",
+    alignItems: 'center',
   },
   headerContent: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 10,
   },
   logo: {
     width: width * 0.6,
     height: height * 0.12,
     marginTop: height * 0.05,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   disasterImageContainer: {
-    marginLeft: "5%",
-    width: "90%",
-    alignItems: "center",
+    marginLeft: '5%',
+    width: '90%',
+    alignItems: 'center',
     marginTop: -80,
     paddingVertical: 20,
-    position: "relative",
+    position: 'relative',
   },
   imageWrapper: {
-    width: "100%",
-    backgroundColor: "#fff",
+    width: '100%',
+    backgroundColor: '#fff',
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   disasterImage: {
-    width: "100%",
+    width: '100%',
     height: 150,
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
   textOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 10,
   },
   disastersHeaderText: {
     fontSize: width * 0.06,
-    fontWeight: "bold",
-    color: "#FF9900",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#FF9900',
+    textAlign: 'center',
   },
   disastersHeaderSubText: {
     fontSize: width * 0.035,
-    color: "#FFF",
-    textAlign: "center",
+    color: '#FFF',
+    textAlign: 'center',
     marginTop: 5,
   },
   scrollViewContent: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 10,
   },
   cardContainer: {
-    width: "90%",
-    alignItems: "center",
+    width: '90%',
+    alignItems: 'center',
   },
   card: {
-    width: "100%",
-    backgroundColor: "#fff",
+    width: '100%',
+    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
@@ -246,109 +209,109 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: width * 0.05,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 5,
   },
   cardStatus: {
     fontSize: width * 0.04,
-    color: "#333",
+    color: '#333',
     marginBottom: 10,
   },
   statusAvailable: {
-    color: "green",
+    color: 'green',
   },
   statusUnavailable: {
-    color: "red",
+    color: 'red',
   },
   cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   icon: {
     width: 24,
     height: 24,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   mapIconWrapper: {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   victimButton: {
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#000",
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   victimButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: width * 0.035,
     marginRight: 5,
   },
   victimIcon: {
     width: 20,
     height: 20,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   donateButton: {
-    backgroundColor: "#FF9900",
+    backgroundColor: '#FF9900',
     borderRadius: 30,
     paddingVertical: 2,
     paddingHorizontal: 20,
     marginTop: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#000",
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   donateButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: width * 0.06,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   donateIcon: {
     width: 50,
     height: 45,
-    resizeMode: "contain",
+    resizeMode: 'contain',
     marginBottom: 12,
   },
   bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#fff",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#fff',
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: "#ccc",
+    borderTopColor: '#ccc',
   },
   navItem: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   notificationBadge: {
-    position: "absolute",
+    position: 'absolute',
     right: -6,
     top: -5,
-    backgroundColor: "black",
+    backgroundColor: 'black',
     borderRadius: 8,
     padding: 2,
     paddingHorizontal: 5,
   },
   notificationText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 10,
   },
 });
