@@ -48,7 +48,7 @@ const ProfilePage = () => {
   async function getData() {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post(`http://192.168.8.103:4000/userdata`, {
+      const response = await axios.post(`http://192.168.1.14:4000/userdata`, {
         token: token,
       });
       setUserData(response.data.data);

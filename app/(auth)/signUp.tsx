@@ -84,7 +84,7 @@ const SignUpPage = () => {
       password,
     };
     axios
-      .post(`http://192.168.8.103:4000/signup`, userData)
+      .post(`http://192.168.1.14:4000/signup`, userData)
       .then((response) => {
         if (response.data.status === 409) {
           Alert.alert('Error', 'User already exists.');
