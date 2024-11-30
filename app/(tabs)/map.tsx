@@ -9,21 +9,21 @@ import {
   Alert,
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import MapView from 'react-native-maps'; // Ensure react-native-maps is installed
+import MapView, { Marker } from 'react-native-maps';
 import { useRouter } from 'expo-router';
+import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import axios from 'axios';
 
 const MapPage: React.FC = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState('');
-  const [selectedReports, setSelectedReports] = useState<{
-    [key: string]: boolean;
-  }>({
-    Flood: false,
-    Hurricane: false,
-    Landslide: false,
-  });
-  const [showReportDropdown, setShowReportDropdown] = useState(false);
+  const [selectedDisaster, setSelectedDisaster] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [locationPickerVisible, setLocationPickerVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: Double;
+    longitude: Double;
+  } | null>(null);
 
   const handleSearchChange = (text: string) => {
     setSearchText(text);
@@ -34,19 +34,55 @@ const MapPage: React.FC = () => {
       Alert.alert('Search Error', 'Please enter a search term.');
       return;
     }
-    // Implement search functionality here
-    // For example, you might want to filter map markers or perform an API call
     Alert.alert('Search', `Searching for: ${searchText}`);
-    // You might also update the map or other components based on the search result
   };
 
-  const toggleReportDropdown = () => setShowReportDropdown(!showReportDropdown);
+  const handleDisasterSelection = (disaster: string) => {
+    setSelectedDisaster(disaster);
+  };
 
-  const handleReportToggle = (report: string) => {
-    setSelectedReports((prevState) => ({
-      ...prevState,
-      [report]: !prevState[report],
-    }));
+  const proceedToLocationPicker = () => {
+    if (!selectedDisaster) {
+      Alert.alert('Error', 'Please select a disaster type.');
+      return;
+    }
+    setLocationPickerVisible(true);
+    setModalVisible(false);
+  };
+
+  const handleMapPress = (event: any) => {
+    setSelectedLocation(event.nativeEvent.coordinate);
+  };
+
+  const submitDisasterReport = async () => {
+    if (!selectedDisaster || !selectedLocation) {
+      Alert.alert('Error', 'Please select a disaster type and location.');
+      return;
+    }
+
+    try {
+      const disasterData = {
+        type: selectedDisaster,
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+      }
+      const response = await axios.post('http://192.168.1.14:8080/api/users/report-disaster', disasterData);
+
+      if (response.status === 200) {
+        Alert.alert('Success', 'Disaster report submitted successfully!');
+        setLocationPickerVisible(false);
+        setSelectedLocation(null);
+        setSelectedDisaster('');
+      } else {
+        Alert.alert('Error', 'An error occurred while submitting the report.');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert('Error', 'An unknown error occurred.');
+      }
+    }
   };
 
   return (
@@ -59,8 +95,9 @@ const MapPage: React.FC = () => {
           latitudeDelta: 5,
           longitudeDelta: 5,
         }}
+        onPress={locationPickerVisible ? handleMapPress : undefined}
       >
-        {/* Add Markers or other Map components here */}
+        {selectedLocation && <Marker coordinate={selectedLocation} />}
       </MapView>
 
       <View style={styles.searchContainer}>
@@ -75,55 +112,17 @@ const MapPage: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.filtersContainer}>
-        <View style={styles.checkboxContainer}>
-          <View style={styles.leftCheckboxes}>
-            <TouchableOpacity style={styles.checkbox}>
-              <Text style={styles.checkboxLabel}>Hospitals</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.checkbox}>
-              <Text style={styles.checkboxLabel}>Shelters</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            onPress={toggleReportDropdown}
-            style={styles.reportCheckbox}
-          >
-            <Text style={styles.checkboxLabel}>Reports</Text>
-            <FontAwesome5
-              name={showReportDropdown ? 'chevron-up' : 'chevron-down'}
-              size={18}
-              color="#007B70"
-            />
-          </TouchableOpacity>
-        </View>
-        {showReportDropdown && (
-          <View style={styles.dropdownList}>
-            {Object.keys(selectedReports).map((report) => (
-              <TouchableOpacity
-                key={report}
-                onPress={() => handleReportToggle(report)}
-                style={styles.dropdownItem}
-              >
-                <Text style={styles.dropdownItemText}>{report}</Text>
-                <FontAwesome5
-                  name={selectedReports[report] ? 'check-square' : 'square'}
-                  size={20}
-                  color="#007B70"
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-      </View>
+      {/* Add Disaster Button (hidden when in modal or location picker) */}
+      {!modalVisible && !locationPickerVisible && (
+        <TouchableOpacity
+          style={styles.disasterButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.disasterButtonText}>Add Disaster</Text>
+        </TouchableOpacity>
+      )}
 
-      <TouchableOpacity
-        style={styles.disasterButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.disasterButtonText}>Add Disaster</Text>
-      </TouchableOpacity>
-
+      {/* Disaster Type Selection Modal */}
       <Modal
         transparent={true}
         visible={modalVisible}
@@ -131,17 +130,75 @@ const MapPage: React.FC = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Disaster Report</Text>
-            {/* Add disaster report form or content here */}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Select Disaster Type</Text>
+            {['Flood', 'Hurricane', 'Landslide'].map((disaster) => (
+              <TouchableOpacity
+                key={disaster}
+                style={[
+                  styles.disasterOption,
+                  selectedDisaster === disaster && styles.selectedDisasterOption,
+                ]}
+                onPress={() => handleDisasterSelection(disaster)}
+              >
+                <Text
+                  style={[
+                    styles.disasterText,
+                    selectedDisaster === disaster && styles.selectedDisasterText,
+                  ]}
+                >
+                  {disaster}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.nextButton}
+                onPress={proceedToLocationPicker}
+              >
+                <Text style={styles.nextButtonText}>Next</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
+
+      {/* Location Picker UI */}
+      {locationPickerVisible && (
+        <View style={styles.locationPicker}>
+          <Text style={styles.pickerText}>
+            Tap on the map to select a location
+          </Text>
+          {selectedLocation && (
+            <Text style={styles.locationText}>
+              Selected Location: {`Lat: ${selectedLocation.latitude}, Lng: ${selectedLocation.longitude}`}
+            </Text>
+          )}
+          <View style={styles.pickerActions}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => {
+                setLocationPickerVisible(false);
+                setSelectedLocation(null);
+              }}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={submitDisasterReport}
+            >
+              <Text style={styles.submitButtonText}>Report</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -156,7 +213,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     position: 'absolute',
-    top: 50, // Adjusted to move the search bar 40px lower
+    top: 50,
     left: 10,
     right: 10,
     flexDirection: 'row',
@@ -168,75 +225,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#007B70',
     borderWidth: 1,
-    borderRadius: 5, // Rounded edges
+    borderRadius: 5,
     padding: 10,
-    paddingRight: 40, // Make space for the search icon
+    paddingRight: 40,
   },
   searchButton: {
     position: 'absolute',
-    right: 20, // Position icon inside the search bar
+    right: 20,
     top: '50%',
-    transform: [{ translateY: -9 }], // Center vertically
+    transform: [{ translateY: -9 }],
     justifyContent: 'center',
     alignItems: 'center',
   },
-  filtersContainer: {
-    position: 'absolute',
-    top: 110, // Adjusted to move the filters down
-    left: 10,
-    right: 10,
-    zIndex: 2,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  leftCheckboxes: {
-    flexDirection: 'row',
-  },
-  reportCheckbox: {
-    backgroundColor: '#fff', // Added background color to "Reports"
-    borderColor: '#007B70',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    backgroundColor: '#fff',
-    borderColor: '#007B70',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 5,
-    marginRight: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    color: '#007B70',
-  },
-  dropdownList: {
-    backgroundColor: '#fff',
-    borderColor: '#007B70',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  dropdownItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: '#007B70',
-  },
   disasterButton: {
     position: 'absolute',
-    bottom: 60, // Adjusted to make space for the bottom navigation bar
+    bottom: 60,
     right: 20,
     backgroundColor: '#007B70',
     borderRadius: 5,
@@ -265,45 +268,93 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  closeButton: {
-    backgroundColor: '#007B70',
-    borderRadius: 5,
+  disasterOption: {
+    width: '100%',
     padding: 10,
+    borderWidth: 1,
+    borderColor: '#007B70',
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  selectedDisasterOption: {
+    backgroundColor: '#007B70',
+  },
+  disasterText: {
+    color: '#007B70',
+    fontSize: 16,
+  },
+  selectedDisasterText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     marginTop: 20,
   },
-  closeButtonText: {
+  cancelButton: {
+    flex: 1,
+    marginRight: 5,
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#000',
+    fontSize: 16,
+  },
+  nextButton: {
+    flex: 1,
+    marginLeft: 5,
+    backgroundColor: '#007B70',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  nextButtonText: {
     color: '#fff',
     fontSize: 16,
   },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
+  locationPicker: {
     position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    zIndex: 1,
-  },
-  navItem: {
+    bottom: 100,
+    left: 10,
+    right: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
     alignItems: 'center',
   },
-  notificationBadge: {
-    position: 'absolute',
-    right: -6,
-    top: -5,
-    backgroundColor: 'black',
-    borderRadius: 8,
-    padding: 2,
-    paddingHorizontal: 5,
+  pickerText: {
+    fontSize: 16,
+    marginBottom: 10,
   },
-  notificationText: {
+  locationText: {
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  pickerActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  submitButton: {
+    flex: 1,
+    backgroundColor: '#007B70',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginLeft: 5,
+  },
+  submitButtonText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
