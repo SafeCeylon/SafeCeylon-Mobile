@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     width: '90%',
     alignItems: 'center',
     marginTop: -80,
-    paddingVertical: 20,
+    paddingTop: 20,
     position: 'relative',
   },
   imageWrapper: {

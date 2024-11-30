@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     width: '90%',
     alignItems: 'center',
     marginTop: -80,
-    paddingVertical: 20,
+    paddingTop: 20,
     position: 'relative',
   },
   imageWrapper: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.035,
     color: '#333',
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 0,
   },
   contactLink: {
     color: '#FF9900',
