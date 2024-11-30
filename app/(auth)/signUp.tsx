@@ -92,7 +92,7 @@ const SignUpPage = () => {
         password,
       };
   
-      const response = await axios.post(`http://192.168.1.14:8080/api/users/register`, userData);
+      const response = await axios.post(`http://192.168.1.101:8080/api/users/register`, userData);
   
       if (response.status === 201) { // 201 is HttpStatus.CREATED
         Alert.alert('Success', 'User registered successfully!');

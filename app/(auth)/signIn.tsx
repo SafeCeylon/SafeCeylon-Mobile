@@ -33,7 +33,7 @@ const SignInPage = () => {
       password,
     };
     axios
-      .post(`http://192.168.1.14:8080/api/users/login`, userData)
+      .post(`http://192.168.1.101:8080/api/users/login`, userData)
       .then((res) => {
         if (res.data.status === 404) {
           Alert.alert('Error', 'User not found.');
