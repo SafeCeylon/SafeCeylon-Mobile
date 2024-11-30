@@ -50,7 +50,7 @@ const VerificationMailPage = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => Alert.alert('Skip', 'Skip, I’ll confirm later')}
-            onPressIn={() => router.push('/resetPw')}
+            onPressIn={() => router.push('/signIn')}
           >
             <Text style={styles.skipText}>Skip, I’ll confirm later</Text>
           </TouchableOpacity>

@@ -33,12 +33,12 @@ const SignInPage = () => {
       password,
     };
     axios
-      .post(`http://192.168.1.14:4000/login`, userData)
+      .post(`http://192.168.1.14:8080/api/users/login`, userData)
       .then((res) => {
         if (res.data.status === 404) {
           Alert.alert('Error', 'User not found.');
-        } else if (res.data.status === 405) {
-          Alert.alert('Error', 'Invalid Password.');
+        } else if (res.data.status === 401) {
+          Alert.alert('Error', 'Invalid Username and/or Password.');
         } else {
           Alert.alert('Success', 'Logged in successfully.');
           AsyncStorage.setItem('token', res.data.token);
@@ -49,7 +49,7 @@ const SignInPage = () => {
         }
       })
       .catch((err) => {
-        Alert.alert('Error', err.message);
+        Alert.alert('401 UNAUTHORIZED: Invalid Username and/or Password.');
       });
   };
 

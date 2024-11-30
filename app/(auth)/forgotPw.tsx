@@ -12,21 +12,39 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import logo from '@/assets/images/Logo3.png';
+import axios from 'axios';
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
 
-  const handlePasswordReset = () => {
+  const handlePasswordReset = async () => {
     if (!email) {
       Alert.alert('Error', 'Please enter your email address.');
       return;
     }
-    // Add further password reset logic here
-    Alert.alert('Success', 'Password reset link sent!');
-
-    // Redirect to email verification page
-    router.push('/emailVerify');
+    try {
+      const response = await axios.post(
+        'http://192.168.1.14:8080/api/users/password-reset',
+        { email }
+      );
+  
+      Alert.alert('Success', 'Password reset link sent to your email.');
+      router.push('/emailVerify');
+      
+    } catch (error: unknown) { 
+      if (axios.isAxiosError(error)) {
+        // Handle Axios-specific errors
+        const errorMessage = error.response?.data?.message || 'An error occurred while sending the password reset link.';
+        Alert.alert('Error', errorMessage);
+      } else if (error instanceof Error) {
+        // Handle other types of errors that are instances of Error
+        Alert.alert('Error', error.message);
+      } else {
+        // For any unknown error type
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
+    }
   };
 
   return (

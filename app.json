@@ -24,7 +24,12 @@
         "googleMaps": {
           "apiKey": "NEXT_PUBLIC_MAPS_API_KEY=AIzaSyD2OOcCZIQ_ywmsa1CXSTmEgitI-9h5xbw"
         }
-      }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "newArchEnabled": true
     },
     "web": {
       "bundler": "metro",

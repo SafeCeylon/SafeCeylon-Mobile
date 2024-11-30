@@ -9,14 +9,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
-// Updated profile picture path
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker'; // Import expo-image-picker
-
-import profilePic from '@/assets/images/profilePic.jpeg';
 import images from '@/constants/Images';
+import { Alert } from 'react-native';
+
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState({
@@ -24,44 +22,47 @@ const ProfilePage = () => {
     nic: '',
     mobileNumber: '',
     email: '',
+    profilePicUrl: '',
+    longitude: '',
+    latitude: '',
+    address: '',
   });
-  // const [profilePicture, setProfilePic] = useState(null);
+
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  // const selectPhoto = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [1, 1],
-  //     quality: 1,
-  //     base64: true,
-  //     freeformCrop: true,
-  //   });
-
-  //   if (!result.canceled) {
-  //     console.log(result.assets[0]);
-  //     const data= <Image source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }} style={{ width: 200, height: 200 }}/>
-  //     setProfilePic(data);
-  //   }
-  // };
 
   async function getData() {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post(`http://192.168.1.14:4000/userdata`, {
-        token: token,
-      });
-      setUserData(response.data.data);
+      console.log('Token retrieved:', token); // Check the value of token
+      if (token) {
+        const response = await axios.post(
+          'http://192.168.1.14:8080/api/users/userdata',
+          // Send empty body as the token is in the header
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+        setUserData(response.data); // Assuming response contains user data directly
+        setLoading(false); // Set loading to false once the data is fetched
+      } else {
+        Alert.alert('Error', 'Token not found. Please log in again.');
+        router.push('/signIn');
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      Alert.alert('Error', 'An error occurred while fetching data.');
     }
-  }
+}
 
   useEffect(() => {
     getData();
   }, []);
 
-  if (!userData) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <Text>Loading...</Text>
@@ -79,7 +80,11 @@ const ProfilePage = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileSection}>
           <View style={styles.profilePicContainer}>
-            <Image source={images.profilePic} style={styles.profilePic} />
+            {/* Display profile picture dynamically */}
+            <Image 
+              source={userData.profilePicUrl ? { uri: userData.profilePicUrl } : images.profilePic}
+              style={styles.profilePic}
+            />
             <TouchableOpacity style={styles.editButton}>
               <FontAwesome5 name="pen" size={20} color="#007B70" />
             </TouchableOpacity>
@@ -89,10 +94,10 @@ const ProfilePage = () => {
 
         <View style={styles.detailsContainer}>
           <Text style={styles.detailLabel}>Location:</Text>
-          <Text style={styles.detailText}>Colombo, Sri Lanka</Text>
+          <Text style={styles.detailText}>LN:{userData.longitude}   LT:{userData.latitude} </Text>
 
           <Text style={styles.detailLabel}>Address:</Text>
-          <Text style={styles.detailText}>No 05, Kottawa, Pannipitiya</Text>
+          <Text style={styles.detailText}>{userData.address}</Text>
 
           <Text style={styles.detailLabel}>NIC:</Text>
           <Text style={styles.detailText}>{userData.nic}</Text>
@@ -119,7 +124,26 @@ const ProfilePage = () => {
 
           <TouchableOpacity
             style={styles.changePasswordButton}
-            onPress={() => router.push('/signIn')}
+            onPress={async () => {
+              try {
+                Alert.alert(
+                  'Logout',
+                  'Are you sure you want to log out?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Yes', onPress: async () => {
+                        await AsyncStorage.removeItem('token');
+                        await axios.post('http://192.168.1.14:8080/api/users/logout');
+                        router.push('/signIn');
+                      }
+                    },
+                  ],
+                )
+              } catch (error) {
+                console.error('Error during logout:', error);
+                Alert.alert('Error', 'An error occurred while logging out.');
+              }
+            }}
           >
             <LinearGradient
               colors={['#007B70', '#00E1CD']}
@@ -140,15 +164,6 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1,
   },
-
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    paddingVertical: 10,
-  },
-
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -176,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#fff', // White background for the pen icon
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 5,
   },
@@ -220,33 +235,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    right: -6,
-    top: -5,
-    backgroundColor: 'black',
-    borderRadius: 8,
-    padding: 2,
-    paddingHorizontal: 5,
-  },
-  notificationText: {
-    color: '#fff',
-    fontSize: 10,
   },
 });
 

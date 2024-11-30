@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
-
+import axios, { AxiosError } from 'axios';
+import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
+// import bcrypt from 'bcryptjs';
 import images from '@/constants/Images';
+import { MapPressEvent } from 'react-native-maps';
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -24,83 +27,91 @@ const SignUpPage = () => {
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [markerCoordinate, setMarkerCoordinate] = useState({
+    latitude: 6.9271,
+    longitude: 79.8612,
+  });
+  const [region, setRegion] = useState({
+    latitude: 6.9271,
+    longitude: 79.8612,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
 
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  useEffect(() => {
+    const getCurrentLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+      setRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude,
+        longitude,
+      }));
+
+      setMarkerCoordinate({
+        latitude,
+        longitude,
+      });
+    };
+
+    getCurrentLocation();
+  }, []);
+
+  const handleMapPress = (event: MapPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setMarkerCoordinate({ latitude, longitude });
   };
 
-  const isValidNic = (nic: string) => {
-    return nic.length === 10 || nic.length === 12; // Assuming NIC is either 10 or 12 characters long
-  };
-
-  const isValidMobileNumber = (mobileNumber: string) => {
-    return mobileNumber.length === 10; // Assuming mobile number is 10 digits
-  };
-
-  const isValidPassword = (password: string) => {
-    return password.length >= 6; // Password must be at least 6 characters
-  };
-
-  const handleSignUp = () => {
-    if (
-      !name ||
-      !nic ||
-      !mobileNumber ||
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !address
-    ) {
+  const handleSignUp = async () => {
+    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword || !address) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    if (!isValidEmail(email)) {
-      Alert.alert('Error', 'Invalid email format.');
-      return;
-    }
-    if (!isValidNic(nic)) {
-      Alert.alert('Error', 'Invalid NIC format.');
-      return;
-    }
-    if (!isValidMobileNumber(mobileNumber)) {
-      Alert.alert('Error', 'Mobile number must be 10 digits.');
-      return;
-    }
-    if (!isValidPassword(password)) {
-      Alert.alert('Error', 'Password must be at least 6 characters.');
-      return;
-    }
+  
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-
-    const userData = {
-      name,
-      nic,
-      mobileNumber,
-      email,
-      password,
-    };
-    axios
-      .post(`http://192.168.1.14:4000/signup`, userData)
-      .then((response) => {
-        if (response.data.status === 409) {
-          Alert.alert('Error', 'User already exists.');
-        } else if (response.data.status === 200) {
-          Alert.alert('Success', 'User registered successfully!');
-          router.push('/signIn');
-        } else {
-          Alert.alert('Error', 'Failed to register user.');
-        }
-      })
-      .catch((error) => {
+  
+    try {
+      const userData = {
+        name,
+        nic,
+        mobileNumber,
+        email,
+        address,
+        latitude: markerCoordinate.latitude,
+        longitude: markerCoordinate.longitude,
+        password,
+      };
+  
+      const response = await axios.post(`http://192.168.1.14:8080/api/users/register`, userData);
+  
+      if (response.status === 201) { // 201 is HttpStatus.CREATED
+        Alert.alert('Success', 'User registered successfully!');
+        router.push('/signIn');
+      } else {
+        Alert.alert('Error', 'Unexpected response from server.');
+      }
+    } catch (err) {
+      const error = err as AxiosError; // Cast 'err' to 'AxiosError'
+  
+      if (error.response && error.response.status === 409) { // 409 is HttpStatus.CONFLICT
+        Alert.alert('Error', 'User already exists.');
+      } else {
         console.error(error);
         Alert.alert('Error', 'Failed to register user.');
-      });
+      }
+    }
   };
-
+  
   return (
     <LinearGradient
       colors={['#007B70', '#00E1CD']}
@@ -115,15 +126,11 @@ const SignUpPage = () => {
         </View>
 
         <View style={styles.formContainer}>
-          <Text style={styles.instructionText}>
-            Provide your personal details to register with the system.
-          </Text>
           <TextInput
             style={styles.input}
             placeholder="Full Name"
             value={name}
             onChangeText={setName}
-            accessibilityLabel="Full Name"
           />
           <View style={styles.row}>
             <TextInput
@@ -131,49 +138,53 @@ const SignUpPage = () => {
               placeholder="NIC"
               value={nic}
               onChangeText={setNic}
-              accessibilityLabel="NIC"
             />
             <TextInput
               style={[styles.input, styles.halfInput]}
               placeholder="Mobile Number"
               value={mobileNumber}
-              onChangeText={setMobileNumber}
               keyboardType="phone-pad"
-              accessibilityLabel="Mobile Number"
+              onChangeText={setMobileNumber}
             />
           </View>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
-            keyboardType="email-address"
-            autoCapitalize="none"
             value={email}
+            keyboardType="email-address"
             onChangeText={setEmail}
-            accessibilityLabel="Email Address"
           />
           <TextInput
             style={styles.input}
-            placeholder="Home Address"
-            autoCapitalize="none"
+            placeholder="Address"
             value={address}
             onChangeText={setAddress}
-            accessibilityLabel="Home Address"
           />
+
+          <Text style={styles.mapInstruction}>
+            Tap on the map to place a marker at your home location.
+          </Text>
+          <MapView
+            style={styles.map}
+            region={region}
+            onPress={handleMapPress}
+          >
+            <Marker coordinate={markerCoordinate} />
+          </MapView>
+
           <TextInput
             style={styles.input}
             placeholder="Password"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            accessibilityLabel="Password"
           />
           <TextInput
             style={styles.input}
-            placeholder="Confirm password"
+            placeholder="Confirm Password"
             secureTextEntry
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            accessibilityLabel="Confirm Password"
           />
           <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
             <LinearGradient
@@ -185,15 +196,6 @@ const SignUpPage = () => {
               <Text style={styles.signUpText}>Sign Up</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <Text style={styles.footerText}>
-            Already have an account?{' '}
-            <Text
-              style={styles.linkText}
-              onPress={() => router.push('/signIn')}
-            >
-              Sign In
-            </Text>
-          </Text>
         </View>
       </ScrollView>
     </LinearGradient>
@@ -201,98 +203,22 @@ const SignUpPage = () => {
 };
 
 const styles = StyleSheet.create({
-  gradientBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingLeft: 3,
-    paddingRight: 3,
-  },
-  headerContainer: {
-    marginTop: '20%',
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  logo: {
-    width: '55%',
-    height: 50,
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
-    marginLeft: 20,
-  },
-  formContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-  },
-  instructionText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 15,
-  },
-  halfInput: {
-    width: '48%',
-  },
-  signUpButton: {
-    width: '100%',
-    marginBottom: 15,
-  },
-  gradientButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  signUpText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  footerText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#00E1CD',
-  },
+  gradientBackground: { flex: 1 },
+  scrollContainer: { flexGrow: 1 },
+  headerContainer: { alignItems: 'center', marginVertical: 20 },
+  logo: { width: 100, height: 100 },
+  title: { fontSize: 24, fontWeight: 'bold', marginTop: 10 },
+  formContainer: { padding: 20 },
+  input: { backgroundColor: '#fff', marginBottom: 10, padding: 10, borderRadius: 5 },
+  map: { width: '100%', height: 200, marginVertical: 15 },
+  mapInstruction: { textAlign: 'center', marginBottom: 10, fontStyle: 'italic' },
+  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  halfInput: { flex: 1, marginHorizontal: 5 },
+  button: { backgroundColor: '#007B70', padding: 10, borderRadius: 5, marginBottom: 10 },
+  buttonText: { color: '#fff', textAlign: 'center' },
+  signUpButton: { marginTop: 20 },
+  gradientButton: { padding: 15, borderRadius: 5, alignItems: 'center' },
+  signUpText: { color: '#fff', fontWeight: 'bold' },
 });
 
 export default SignUpPage;

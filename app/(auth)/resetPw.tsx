@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,26 +12,52 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 
 import logo from '@/assets/images/Logo3.png';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useRoute } from '@react-navigation/native'; // Updated import
+import axios from 'axios';
+
 
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [token, setToken] = useState('');
+  const router = useRouter();
+  const route = useRoute();
 
-  const handleResetPassword = () => {
-    if (!password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in both fields.');
-      return;
+  const params = route.params as { token?: string };
+
+  useEffect(() => {
+    if (params?.token) {
+      setToken(params.token);
     }
+  }, [params]);
 
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
+  const handleResetPassword = async () => {
+      if (!password || !confirmPassword) {
+          Alert.alert('Error', 'Please fill in both fields.');
+          return;
+      }
 
-    // Add further reset password logic here
-    Alert.alert('Success', 'Password reset successfully! Please sign in.');
-    router.push('/signIn');
+      if (password !== confirmPassword) {
+          Alert.alert('Error', 'Passwords do not match.');
+          return;
+      }
+
+      if (!token) {
+          Alert.alert('Error', 'Invalid reset token.');
+          return;
+      }
+
+      try {
+          await axios.post('http://http://192.168.1.14:8080/api/users/reset-password', {
+              token,
+              password,
+          });
+          Alert.alert('Success', 'Password reset successfully! Please sign in.');
+          router.push('/signIn');
+      } catch (error) {
+          Alert.alert('Error occurred while resetting password.');
+      }
   };
 
   return (
