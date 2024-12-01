@@ -168,9 +168,9 @@ const MapPage: React.FC = () => {
     switch (type) {
       case 'Flood':
         return { fillColor: 'rgba(0, 0, 255, 0.2)', strokeColor: 'rgba(0, 0, 255, 0.8)' };
-      case 'hurricane':
+      case 'Hurricane':
         return { fillColor: 'rgba(255, 0, 0, 0.2)', strokeColor: 'rgba(255, 0, 0, 0.8)' };
-      case 'landslide':
+      case 'Landslide':
         return { fillColor: 'rgba(0, 255, 0, 0.2)', strokeColor: 'rgba(0, 255, 0, 0.8)' };
       default:
         return { fillColor: 'rgba(0, 0, 0, 0.2)', strokeColor: 'rgba(0, 0, 0, 0.8)' };

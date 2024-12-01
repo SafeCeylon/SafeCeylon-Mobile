@@ -8,6 +8,7 @@ import {
   Dimensions,
   ScrollView,
   ImageBackground,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -18,6 +19,17 @@ const { width, height } = Dimensions.get('window');
 
 const DonationsScreen: React.FC = () => {
   const router = useRouter();
+
+  const handleContactPress = () => {
+    const email = 'dev.safeceylon@gmail.com';
+    const subject = 'Support Request'; // Optional: Set a default subject
+    const body = ''; // Optional: Set a default body content
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    Linking.openURL(mailto).catch(err => {
+      console.error('Failed to open email app:', err);
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -79,7 +91,9 @@ const DonationsScreen: React.FC = () => {
 
         <Text style={styles.contactText}>
           If you have any problem?{' '}
-          <Text style={styles.contactLink}>Contact Us</Text>
+          <TouchableOpacity onPress={handleContactPress}>
+            <Text style={styles.contactLink}>Contact Us</Text>
+          </TouchableOpacity>
         </Text>
       </ScrollView>
     </View>

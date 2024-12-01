@@ -9,17 +9,17 @@ import {
   ScrollView,
   ImageBackground,
   TextInput,
+  Alert,
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-import { useRouter } from 'expo-router';
-
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import images from '@/constants/Images';
-import icons from '@/constants/Icons';
+import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 const DonationsScreen: React.FC = () => {
-  const router = useRouter();
   const [selectedAmount, setSelectedAmount] = useState('');
   const [otherAmount, setOtherAmount] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -39,6 +39,39 @@ const DonationsScreen: React.FC = () => {
     setSelectedAmount('');
   };
 
+  const handleDonatePress = async () => {
+    if (!termsAccepted) {
+      Alert.alert('Terms and Conditions', 'You must agree to the terms and conditions.');
+      return;
+    }
+
+    const amount = otherAmount || selectedAmount;
+    if (!amount || !firstName || !lastName || !cardNumber || !expireDate || !cvc) {
+      Alert.alert('Incomplete Details', 'Please fill all required fields.');
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(
+        'http://192.168.1.14:8080/api/users/add-mono-donation',
+        {
+          amount
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      Alert.alert('Success', 'Donation successful!');
+      router.push('/home');
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to process your donation.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -56,12 +89,12 @@ const DonationsScreen: React.FC = () => {
           <View style={styles.textOverlay}>
             <Text style={styles.disastersHeaderText}>Monetary Donations</Text>
             <Text style={styles.disastersHeaderSubText}>
-              Your donation can make a significant impact in helping those
-              affected by disasters to recover and rebuild their lives.
+              Your donation can make a significant impact in helping those affected by disasters to recover and rebuild their lives.
             </Text>
           </View>
         </View>
       </View>
+
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.formContainer}>
           <Text style={styles.formHeader}>Select a Donation Amount [LKR]</Text>
@@ -101,9 +134,7 @@ const DonationsScreen: React.FC = () => {
             value={otherAmount}
             onChangeText={handleOtherAmountChange}
           />
-          <Text style={styles.formHeader}>
-            Set up your credit or debit card
-          </Text>
+          <Text style={styles.formHeader}>Payment Details</Text>
           <TextInput
             style={styles.input}
             placeholder="First Name"
@@ -141,14 +172,10 @@ const DonationsScreen: React.FC = () => {
             checked={termsAccepted}
             onPress={() => setTermsAccepted(!termsAccepted)}
           />
-          <TouchableOpacity style={styles.donateButton}>
+          <TouchableOpacity style={styles.donateButton} onPress={handleDonatePress}>
             <Text style={styles.donateButtonText}>DONATE</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.contactText}>
-          If you have any problem?{' '}
-          <Text style={styles.contactLink}>Contact Us</Text>
-        </Text>
       </ScrollView>
     </View>
   );
