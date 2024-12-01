@@ -328,19 +328,19 @@ const DisasterPrediction: React.FC = () => {
 
   const renderMap = () => {
     let mapRegion = {
-      latitude: 6.9271, // Latitude of Sri Lanka
-      longitude: 79.8612, // Longitude of Sri Lanka
-      latitudeDelta: 0.5,
-      longitudeDelta: 0.5,
+      latitude: 7.8731,
+      longitude: 80.7718,
+      latitudeDelta: 2.5,
+      longitudeDelta: 2.5,
     };
 
     switch (selectedDisaster) {
       case 'Landslide':
         mapRegion = {
-          latitude: 6.9271,
-          longitude: 80.8612,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
+          latitude: 7.8731,
+          longitude: 80.7718,
+          latitudeDelta: 2.8,
+          longitudeDelta: 2.8,
         };
         break;
       case 'Air Quality':
@@ -429,7 +429,9 @@ const DisasterPrediction: React.FC = () => {
 
         {renderWarningLevels()}
 
-        {renderMap()}
+        {
+          selectedDisaster === 'Landslide' ? renderMap() : null
+        }
       </ScrollView>
     </View>
   );
@@ -555,13 +557,15 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: '90%',
-    height: 300,
+    height: 600,
     marginTop: 20,
+    marginBottom: 20,
     borderRadius: 10,
     overflow: 'hidden',
   },
   map: {
     flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
   bottomNav: {
     flexDirection: 'row',

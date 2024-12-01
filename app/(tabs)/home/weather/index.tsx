@@ -11,6 +11,7 @@ import {
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import MapView, {Marker} from 'react-native-maps';
 import logo from '@/assets/images/Logo3.png';
 import backgroundImage from '@/assets/images/defaultBGclipped.png';
 import weatherImage from '@/assets/images/weather.png';
@@ -32,61 +33,51 @@ import temperatureImage5 from '@/assets/images/temp/temp_5.png';
 import temperatureImage6 from '@/assets/images/temp/temp_6.png';
 import temperatureImage7 from '@/assets/images/temp/temp_7.png';
 import temperatureImage8 from '@/assets/images/temp/temp_8.png';
-import tempIcon from '@/assets/images/w_icons/clouds-and-sun.png';
+import Icons from '@/constants/Icons';
 import { useRouter } from 'expo-router';
+import districtData from '@/constants/districtData';
+import axios from 'axios';
 
 const Weather: React.FC = () => {
   const router = useRouter();
   const [selectedWeather, setSelectedWeather] = useState('Weather');
-  const [hour, setHour] = useState(16); // Default to 4:00 PM
-  const [dayOffset, setDayOffset] = useState(0); // Default to current day
   const [selectedDay, setSelectedDay] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dateRanges, setDateRanges] = useState<string[]>([]);
+  const [weatherData, setWeatherData] = useState<any[]>([]); // Add state to store data
 
-  const getDayName = (offset: number) => {
-    const today = new Date();
-    const futureDate = new Date(today);
-    futureDate.setDate(today.getDate() + offset);
+  const mergedWeatherData = weatherData.flatMap((item) => {
 
-    if (offset === 0) {
-      return 'Today';
-    } else if (offset === 1) {
-      return 'Tomorrow';
-    } else {
-      const day = futureDate.getDate();
-      const month = futureDate
-        .toLocaleString('default', { month: 'short' })
-        .toUpperCase();
-      return `${day} ${month}`;
+    const districts = item.district.trim().split(" "); // Split space-separated districts
+    return districts.map((districtName: String) => {
+      const districtCenter = districtData.find(
+        (district) => district.district_name.toLowerCase() === districtName.toLowerCase()
+      );
+  
+      if (districtCenter) {
+        return {
+          id: `${item.id}-${districtName}`,
+          condition: item.condition,
+          rainfallType: item.rainfallType,
+          windSpeeds: item.windSpeeds,
+          coordinates: districtCenter.center,
+        };
+      }
+      return null;
+    }).filter(Boolean);
+  });
+
+  const fetchWeatherData = async () => {
+    try {
+      const response = await axios.get('http://192.168.1.14:8080/api/users/get-weather');
+      const weatherData = response.data;
+      console.log('Fetched Weather Data:', weatherData);
+      // Example: If you want to update a state with the fetched data
+      setWeatherData(weatherData); // Use a state to store it
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
     }
   };
-
-  const handleHourChange = (increment: boolean) => {
-    setHour((prevHour) => {
-      const newHour = increment ? prevHour + 3 : prevHour - 3;
-      return newHour < 0 ? 21 : newHour > 24 ? 0 : newHour;
-    });
-  };
-
-  const handleDayChange = (increment: boolean) => {
-    setDayOffset((prevDayOffset) => {
-      const newDayOffset = increment ? prevDayOffset + 1 : prevDayOffset - 1;
-      return newDayOffset < 0 ? 7 : newDayOffset > 7 ? 0 : newDayOffset;
-    });
-  };
-
-  const dummyWeatherData = [
-    'Clear Sky',
-    'Partly Cloudy',
-    'Mostly Cloudy',
-    'Rain Showers',
-    'Thunderstorms',
-    'Sunny',
-    'Overcast',
-  ];
-
-  const dummyTemperatureData = [30, 32, 28, 26, 25, 29, 27, 31, 33];
 
   useEffect(() => {
     const generateDateRanges = () => {
@@ -116,6 +107,7 @@ const Weather: React.FC = () => {
       setSelectedDay(ranges[0]); // Set the initial selected day
     };
 
+    fetchWeatherData();
     generateDateRanges();
   }, []);
 
@@ -192,69 +184,41 @@ const Weather: React.FC = () => {
             >
               <Picker.Item label="Weather" value="Weather" />
               <Picker.Item label="Marine Weather" value="Marine Weather" />
-              <Picker.Item label="City Forecast" value="City Forecast" />
               <Picker.Item label="9 Day Forecast" value="9 Day Forecast" />
             </Picker>
           </LinearGradient>
         </View>
 
         {selectedWeather === 'Weather' && (
-          <View style={styles.card}>
-            <View style={styles.weatherContainer}>
-              <Image source={tempIcon} style={styles.weatherIcon} />
-              <Text style={styles.weatherInfo}>
-                {dummyTemperatureData[hour / 3]}°C |{' '}
-                {dummyWeatherData[hour / 3]}
-              </Text>
-              <Text style={styles.weatherDetails}>
-                Today | Saturday | {hour}:00 PM
-              </Text>
-              <Text style={styles.weatherDetails}>
-                Humidity: 55% | Wind: 23 km/h
-              </Text>
-            </View>
+          <View style={styles.mapContainer}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: 7.8731,
+                longitude: 80.7718,
+                latitudeDelta: 2.5,
+                longitudeDelta: 2.5,
+              }}
+            >
+              {mergedWeatherData.map((item) => (
+                <Marker
+                  key={item.id}
+                  coordinate={item.coordinates}
+                  title={item.condition}
+                  description={`Rainfall type: ${item.rainfallType}, Wind speeds: ${item.windSpeeds} kmph`}
+                >
 
-            <View style={styles.adjustContainer}>
-              <TouchableOpacity
-                onPress={() => handleHourChange(false)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.adjustLabel}>Adjust Hour: {hour}:00</Text>
-              <TouchableOpacity
-                onPress={() => handleHourChange(true)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.adjustContainer}>
-              <TouchableOpacity
-                onPress={() => handleDayChange(false)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.adjustLabel}>
-                Adjust Day: {getDayName(dayOffset)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => handleDayChange(true)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.dayTempContainer}>
-              <Text style={styles.dayTemp}>
-                {getDayName(dayOffset)}: Max {dummyTemperatureData[dayOffset]}°C
-                | Min {dummyTemperatureData[(dayOffset + 1) % 9]}°C
-              </Text>
-            </View>
-          </View>
+                  <View style={styles.iconContainer}>
+                    <Image
+                      source={Icons[item.rainfallType]}
+                      style={styles.icon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </Marker>
+              ))}
+            </MapView>
+        </View>
         )}
 
         {selectedWeather === 'Marine Weather' && (
@@ -272,33 +236,11 @@ const Weather: React.FC = () => {
               the sea areas off the coasts extending from Kankasanthurai to
               Puttalam via Mannar and from Hambantota to Pottuvil.
             </Text>
-
             <Text style={styles.cardTitle}>State of Sea:</Text>
             <Text style={styles.cardDescription}>
               The sea areas off the coasts extending from Trincomalee to
               Kankasanthurai via Mullaitivu and Puttalam to Hambantota via
               Colombo and Galle can be fairly rough at times.
-            </Text>
-          </View>
-        )}
-
-        {selectedWeather === 'City Forecast' && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>
-              Issued at 04.00 p.m. on 26 July 2024
-            </Text>
-            <Text style={styles.cardDescription}>
-              Showers will occur at times in Sabaragamuwa province and in Kandy
-              and Nuwara-Eliya districts. Several spells of showers will occur
-              in Western and North-western provinces and in Galle and Matara
-              districts.
-            </Text>
-            <Text style={styles.cardDescription}>
-              Strong winds of about (50-55) kmph can be expected at times over
-              Western slopes of the central hills and Northern, North-central
-              and North-western provinces and in Trincomalee, Monaragala and
-              Hambantota districts. Temporary strong winds (about 40-50) kmph
-              can be expected during thundershowers elsewhere of the island.
             </Text>
           </View>
         )}
@@ -569,6 +511,25 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
+  mapContainer: {
+    height: '100%',
+    width: '95%',
+    marginBottom: 20,
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  },
+  iconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // or a contrasting color
+    borderRadius: 25, // Makes it circular for a 50x50 container
+    padding: 10,
+  },  
 });
 
 export default Weather;

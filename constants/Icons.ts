@@ -6,4 +6,12 @@ export default {
   Victim: require('@/assets/images/icons/Victim.png'),
   Hospital: require('@/assets/images/icons/hospital.png'),
   Shelter: require('@/assets/images/icons/shelter.png'),
+  Lightning: require('@/assets/images/w_icons/lightning.png'),
+  Rain: require('@/assets/images/w_icons/rain.png'),
+  Clouds: require('@/assets/images/w_icons/clouds.png'),
+  CloudsAndSun: require('@/assets/images/w_icons/clouds-and-sun.png'),
+  LightningAndRain: require('@/assets/images/w_icons/lightning-and-rain.png'),
+  Storm: require('@/assets/images/w_icons/storm.png'),
+  Sun: require('@/assets/images/w_icons/sun.png'),
+  SunAndRain: require('@/assets/images/w_icons/sun-and-rain.png'),
 };
