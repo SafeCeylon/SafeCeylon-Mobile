@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,17 +10,110 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import MapView from "react-native-maps";
+import MapView, { Polygon } from "react-native-maps";
 import logo from "@/assets/images/Logo3.png";
 import backgroundImage from "@/assets/images/defaultBGclipped.png";
 import disasterIcon from "@/assets/images/disaster.png";
 import { useRouter } from "expo-router";
+import dsdData from "@/constants/dsdData";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 
 const DisasterPrediction: React.FC = () => {
   const router = useRouter();
   const [selectedDisaster, setSelectedDisaster] = useState("Landslide");
   const [selectedDistrict, setSelectedDistrict] = useState("Colombo");
+  const [polygons, setPolygons] = useState({});
+  const generatePolygons = (sdDivisionColorMap, dsdData) => {
+    const polygons = {};
+    sdDivisionColorMap.forEach(({ divisionalSecretariatDivision, color }) => {
+      // Find the corresponding coordinates for the division from dsdData
+      const divisionCoordinates = dsdData[divisionalSecretariatDivision];
+      if (divisionCoordinates) {
+        // Map the coordinates to the required structure
+        const formattedCoordinates = divisionCoordinates[0][0].map(
+          ([longitude, latitude]) => ({
+            latitude,
+            longitude,
+          })
+        );
+
+        // Add the formatted data to the polygons object
+        polygons[divisionalSecretariatDivision] = [
+          {
+            coordinates: formattedCoordinates,
+            strokeColor: color,
+            fillColor: `${color}80`, // Assuming you want 50% opacity for the fill color
+          },
+        ];
+      }
+    });
+
+    return polygons;
+  };
+
+  const processDisasterData = (disasterData) => {
+    const sdDivisionColorMap = [];
+
+    // Loop through each data entry
+    disasterData.forEach((entry) => {
+      const { district, divisionalSecretariatDivisions, warningLevel } = entry;
+      const divisions = divisionalSecretariatDivisions.split(" "); // Split SD Divisions by spaces
+      const color = getColorForWarningLevel(warningLevel); // Determine the color based on warning level
+      // Map each SD Division to its color
+      divisions.forEach((division) => {
+        sdDivisionColorMap.push({
+          divisionalSecretariatDivision: division,
+          color,
+        });
+      });
+    });
+
+    const generatedPolygons = generatePolygons(sdDivisionColorMap, dsdData);
+    setPolygons(generatedPolygons);
+
+    return sdDivisionColorMap;
+  };
+
+  // Helper function to assign colors based on warning level
+
+  const getColorForWarningLevel = (warningLevel) => {
+    switch (warningLevel) {
+      case "Level 1 (Yellow)":
+        return "#FFFF00"; // Yellow
+
+      case "Level 2 (Amber)":
+        return "#FFBF00"; // Amber
+
+      case "Level 3 (Red)":
+        return "#FF0000"; // Red
+
+      default:
+        return "#000000"; // Default color (Black)
+    }
+  };
+
+  // Example of using it with the fetched data
+
+  const fetchDisasterData = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.1.101:8080/api/users/disaster-data"
+      );
+
+      const fetchedDisasterData = await response.data;
+
+      // Process the fetched data
+
+      processDisasterData(fetchedDisasterData);
+    } catch (error) {
+      console.error("Error fetching disaster data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDisasterData();
+  }, []);
 
   const disasterData = {
     Landslide: {
@@ -103,44 +196,20 @@ const DisasterPrediction: React.FC = () => {
     "Ampara",
   ];
 
-  const gnDivisionsDataLS = {
-    Kandy: {
-      WATCH: ["Katugastota", "Peradeniya"],
-      ALERT: ["Gatambe", "Gampola"],
-      EVACUATE: ["Nawalapitiya", "Kadugannawa"],
-    },
-    Kurunegala: {
-      WATCH: ["Wariyapola", "Pannala"],
-      ALERT: ["Hettipola", "Bingiriya"],
-    },
-    Ratnapura: {
-      WATCH: ["Pelmadulla", "Kuruwita"],
-      ALERT: ["Embilipitiya", "Eheliyagoda"],
-    },
-    Badulla: {
-      WATCH: ["Bandarawela", "Haputale"],
-      ALERT: ["Welimada", "Ella"],
-      EVACUATE: ["Mahiyanganaya", "Passara"],
-    },
-    Matale: {
-      WATCH: ["Dambulla", "Rattota"],
-      ALERT: ["Ukuwela", "Galewela"],
-      EVACUATE: ["Sigiriya", "Pallepola"],
-    },
-    NuwaraEliya: {
-      WATCH: ["Hatton", "Nanuoya"],
-      ALERT: ["Talawakele", "Kotagala"],
-    },
-    Puttalam: {
-      WATCH: ["Chilaw", "Wennappuwa"],
-      ALERT: ["Nattandiya", "Mundel"],
-      EVACUATE: ["Anamaduwa", "Kalpitiya"],
-    },
-    Gampaha: {
-      WATCH: ["Negombo", "Minuwangoda"],
-      ALERT: ["Divulapitiya", "Wattala"],
-      EVACUATE: ["Katana", "Ragama"],
-    },
+  const renderPolygons = () => {
+    if (!polygons || Object.keys(polygons).length === 0) return null;
+    return Object.keys(polygons).map((districtKey, index) => {
+      const district = polygons[districtKey];
+      return district.map((polygon, polyIndex) => (
+        <Polygon
+          key={`${districtKey}-${polyIndex}`}
+          coordinates={polygon.coordinates}
+          fillColor={polygon.fillColor || "#FF0000"}
+          strokeColor={polygon.strokeColor || "#FF0000"}
+          strokeWidth={2}
+        />
+      ));
+    });
   };
 
   const gnDivisionsDataHR = {
@@ -224,10 +293,7 @@ const DisasterPrediction: React.FC = () => {
   };
 
   const renderWarningLevels = () => {
-    if (
-      selectedDisaster === "Landslide" &&
-      gnDivisionsDataLS[selectedDistrict]
-    ) {
+    if (selectedDisaster === "Landslide") {
       return (
         <View style={styles.warningContainer}>
           {disasterData.Landslide.warnings.map((warning, index) => (
@@ -238,17 +304,6 @@ const DisasterPrediction: React.FC = () => {
               <Text style={styles.warningText}>
                 Warning Level: {warning.level}
               </Text>
-              {gnDivisionsDataLS[selectedDistrict][warning.level] && (
-                <View style={styles.gnDivisionContainer}>
-                  {gnDivisionsDataLS[selectedDistrict][warning.level].map(
-                    (gnDivision, idx) => (
-                      <Text key={idx} style={styles.gnDivisionText}>
-                        {gnDivision}
-                      </Text>
-                    )
-                  )}
-                </View>
-              )}
             </View>
           ))}
         </View>
@@ -328,53 +383,26 @@ const DisasterPrediction: React.FC = () => {
   };
 
   const renderMap = () => {
-    let mapRegion = {
-      latitude: 6.9271, // Latitude of Sri Lanka
-      longitude: 79.8612, // Longitude of Sri Lanka
-      latitudeDelta: 0.5,
-      longitudeDelta: 0.5,
+    const mapRegion = {
+      latitude: 7.8731,
+      longitude: 80.7718,
+      latitudeDelta: 2.8,
+      longitudeDelta: 2.8,
     };
-
-    switch (selectedDisaster) {
-      case "Landslide":
-        mapRegion = {
-          latitude: 6.9271,
-          longitude: 80.8612,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        };
-        break;
-      case "Air Quality":
-        mapRegion = {
-          latitude: 7.9271,
-          longitude: 79.8612,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        };
-        break;
-      case "Hurricane":
-        mapRegion = {
-          latitude: 8.9271,
-          longitude: 79.8612,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        };
-        break;
-      case "Flood":
-        mapRegion = {
-          latitude: 9.9271,
-          longitude: 79.8612,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        };
-        break;
-      default:
-        break;
-    }
 
     return (
       <View style={styles.mapContainer}>
-        <MapView style={styles.map} initialRegion={mapRegion} />
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 7.8731,
+            longitude: 80.7718,
+            latitudeDelta: 2,
+            longitudeDelta: 2,
+          }}
+        >
+          {renderPolygons()}
+        </MapView>
       </View>
     );
   };
@@ -405,31 +433,24 @@ const DisasterPrediction: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-
         <View style={styles.dropdownContainer}>
-
           <LinearGradient
-
             colors={["#007B70", "#00E1CD"]}
-
             start={[0, 0]}
-
             end={[1, 0]}
-
             style={styles.gradient}
-
           >
-
             <Picker
-
               selectedValue={selectedDisaster}
-
               style={styles.picker}
+              onValueChange={(itemValue) => {
+                setSelectedDisaster(itemValue);
 
-              onValueChange={(itemValue) => setSelectedDisaster(itemValue)}
-
+                if (itemValue !== "Landslide") {
+                  setSelectedDistrict("Colombo"); // Reset district if not Landslide
+                }
+              }}
             >
-
               <Picker.Item label="Landslide" value="Landslide" />
 
               <Picker.Item label="Air Quality" value="Air Quality" />
@@ -437,59 +458,29 @@ const DisasterPrediction: React.FC = () => {
               <Picker.Item label="Hurricane" value="Hurricane" />
 
               <Picker.Item label="Floods" value="Floods" />
-
             </Picker>
-
           </LinearGradient>
-
         </View>
 
+        {selectedDisaster !== "Landslide" && (
+          <View style={styles.dropdownContainer}>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedDistrict}
+                style={styles.picker}
+                onValueChange={(itemValue) => setSelectedDistrict(itemValue)}
+              >
+                {districts.map((district, index) => (
+                  <Picker.Item label={district} value={district} key={index} />
+                ))}
+              </Picker>
+            </View>
+          </View>
+        )}
 
+        {selectedDisaster != "Landslide" && renderWarningLevels()}
 
-        <View style={styles.dropdownContainer}>
-
-          <LinearGradient
-
-            colors={["#007B70", "#00E1CD"]}
-
-            start={[0, 0]}
-
-            end={[1, 0]}
-
-            style={styles.gradient}
-
-          >
-
-            <Picker
-
-              selectedValue={selectedDistrict}
-
-              style={styles.picker}
-
-              onValueChange={(itemValue) => setSelectedDistrict(itemValue)}
-
-            >
-
-              {districts.map((district, index) => (
-
-                <Picker.Item label={district} value={district} key={index} />
-
-              ))}
-
-            </Picker>
-
-          </LinearGradient>
-
-        </View>
-
-
-
-        {renderWarningLevels()}
-
-
-
-        {renderMap()}
-
+        {selectedDisaster === "Landslide" && renderMap()}
       </ScrollView>
     </View>
   );

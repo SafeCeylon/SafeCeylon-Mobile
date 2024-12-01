@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,38 @@ import {
   Alert,
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polygon } from 'react-native-maps';
+import axios from 'axios';
+import icons from '@/constants/Icons';
 import { useRouter } from 'expo-router';
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
-import axios from 'axios';
+
+// Define TypeScript types
+interface Disaster {
+  latitude: number;
+  longitude: number;
+  radius: number;
+  type: string;
+}
+
+interface Hospital {
+  latitude: number;
+  longitude: number;
+  name: string;
+}
+
+interface Shelter {
+  latitude: number;
+  longitude: number;
+  name: string;
+}
 
 const MapPage: React.FC = () => {
-  const router = useRouter();
+    const router = useRouter();
   const [searchText, setSearchText] = useState('');
+  const [disasters, setDisasters] = useState<Disaster[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [shelters, setShelters] = useState<Shelter[]>([]);
   const [selectedDisaster, setSelectedDisaster] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [locationPickerVisible, setLocationPickerVisible] = useState(false);
@@ -85,6 +109,74 @@ const MapPage: React.FC = () => {
     }
   };
 
+
+  useEffect(() => {
+    const fetchMapData = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.101:8080/api/users/map');
+        if (response.status === 200) {
+          const { disasters, hospitals, shelters } = response.data;
+          setDisasters(disasters || []);
+          setHospitals(hospitals || []);
+          setShelters(shelters || []);
+        } else {
+          Alert.alert('Error', 'Unable to fetch map data.');
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error('Unknown error:', error);
+        }
+      }
+    };
+
+    fetchMapData();
+  }, []);
+
+  const generateCirclePoints = (latitude: number, longitude: number, radius: number, points = 36) => {
+    const earthRadius = 6371000; // Earth radius in meters
+    const circlePoints = [];
+    const lat = (latitude * Math.PI) / 180;
+    const lng = (longitude * Math.PI) / 180;
+  
+    for (let i = 0; i <= points; i++) {
+      const angle = (i * 360) / points;
+      const angleRad = (angle * Math.PI) / 180;
+  
+      const latOffset = Math.asin(
+        Math.sin(lat) * Math.cos(radius / earthRadius) +
+        Math.cos(lat) * Math.sin(radius / earthRadius) * Math.cos(angleRad)
+      );
+      const lngOffset =
+        lng +
+        Math.atan2(
+          Math.sin(angleRad) * Math.sin(radius / earthRadius) * Math.cos(lat),
+          Math.cos(radius / earthRadius) - Math.sin(lat) * Math.sin(latOffset)
+        );
+  
+      circlePoints.push({
+        latitude: (latOffset * 180) / Math.PI,
+        longitude: (lngOffset * 180) / Math.PI,
+      });
+    }
+    return circlePoints;
+  };
+  
+
+  const getDisasterColors = (type: string) => {
+    switch (type) {
+      case 'Flood':
+        return { fillColor: 'rgba(0, 0, 255, 0.2)', strokeColor: 'rgba(0, 0, 255, 0.8)' };
+      case 'Hurricane':
+        return { fillColor: 'rgba(255, 0, 0, 0.2)', strokeColor: 'rgba(255, 0, 0, 0.8)' };
+      case 'Landslide':
+        return { fillColor: 'rgba(0, 255, 0, 0.2)', strokeColor: 'rgba(0, 255, 0, 0.8)' };
+      default:
+        return { fillColor: 'rgba(0, 0, 0, 0.2)', strokeColor: 'rgba(0, 0, 0, 0.8)' };
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -98,6 +190,42 @@ const MapPage: React.FC = () => {
         onPress={locationPickerVisible ? handleMapPress : undefined}
       >
         {selectedLocation && <Marker coordinate={selectedLocation} />}
+
+        {disasters.map((disaster, index) => {
+          const { latitude, longitude, radius, type } = disaster;
+          const { fillColor, strokeColor } = getDisasterColors(type);
+          const circlePoints = generateCirclePoints(latitude, longitude, radius);
+          return (
+            <Polygon
+              key={index}
+              coordinates={circlePoints}
+              fillColor={fillColor}
+              strokeColor={strokeColor}
+              strokeWidth={2}
+            />
+          );
+        })}
+
+        {hospitals.map((hospital, index) => (
+          <Marker
+            key={index}
+            coordinate={{ latitude: hospital.latitude, longitude: hospital.longitude }}
+            title={hospital.name}
+            description="Hospital"
+            icon={icons.Hospital}
+          />
+        ))}
+
+        {shelters.map((shelter, index) => (
+          <Marker
+            key={index}
+            coordinate={{ latitude: shelter.latitude, longitude: shelter.longitude }}
+            title={shelter.name}
+            description="Shelter"
+            pinColor="orange"
+            icon={icons.Shelter}
+          />
+        ))}
       </MapView>
 
       <View style={styles.searchContainer}>
@@ -105,9 +233,9 @@ const MapPage: React.FC = () => {
           style={styles.searchBar}
           placeholder="Search locations..."
           value={searchText}
-          onChangeText={handleSearchChange}
+          onChangeText={setSearchText}
         />
-        <TouchableOpacity style={styles.searchButton} onPress={performSearch}>
+        <TouchableOpacity style={styles.searchButton} onPress={() => Alert.alert('Search', searchText)}>
           <FontAwesome5 name="search" size={18} color="#007B70" />
         </TouchableOpacity>
       </View>

@@ -1,56 +1,88 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  date: string;
+  threatLevel: string;
+  idUser?: string;
+  status?: string;
+  cleared?: boolean;
+};
 
 const NotificationPage = () => {
-  const router = useRouter();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const notifications = [
-    {
-      title: 'Severe Weather Alert',
-      description:
-        'A severe weather warning has been issued for your area. Please take necessary precautions.',
-      date: 'July 27, 2024',
-      severity: 'red',
-    },
-    {
-      title: 'High Wind Warning',
-      description:
-        'Strong winds expected. Secure loose objects and avoid unnecessary travel.',
-      date: 'July 26, 2024',
-      severity: 'amber',
-    },
-    {
-      title: 'Flood Watch',
-      description:
-        'Heavy rains may cause flooding. Be prepared and stay informed.',
-      date: 'July 25, 2024',
-      severity: 'yellow',
-    },
-    {
-      title: 'Scheduled Maintenance',
-      description:
-        'Maintenance is scheduled for tonight. Service may be intermittent.',
-      date: 'July 23, 2024',
-      severity: 'grey',
-    },
-    {
-      title: 'Service Update',
-      description:
-        'Updates have been made to the system. Please review the changes.',
-      date: 'July 22, 2024',
-      severity: 'grey',
-    },
-    // Add more notifications here
-  ];
+  const fetchNotifications = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.get(
+        'http://192.168.1.101:8080/api/users/get-notifications',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setNotifications(response.data);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  const clearNotification = async (notificationId: string) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.post(
+        `http://192.168.1.101:8080/api/users/clear-notification`,
+        { notificationId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      Alert.alert('Success', 'Notification cleared!');
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notification) => notification.id !== notificationId)
+      );
+    } catch (error) {
+      console.error('Error clearing notification:', error);
+      Alert.alert('Error', 'Failed to clear notification.');
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const getSeverityColor = (severity: String) => {
+    switch (severity) {
+      case 'Red':
+        return '#FF0000';
+      case 'Amber':
+        return '#FFBF00';
+      case 'Yellow':
+        return '#FFFF00';
+      case 'Grey':
+        return '#CCCCCC';
+      default:
+        return '#CCCCCC';
+    }
+  };
 
   return (
     <LinearGradient
@@ -65,12 +97,12 @@ const NotificationPage = () => {
 
       <View style={styles.notificationContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {notifications.map((notification, index) => (
-            <View key={index} style={styles.notificationCard}>
+          {notifications.map((notification) => (
+            <View key={notification.id} style={styles.notificationCard}>
               <View
                 style={[
                   styles.severityBar,
-                  { backgroundColor: getSeverityColor(notification.severity) },
+                  { backgroundColor: getSeverityColor(notification.threatLevel) },
                 ]}
               />
               <View style={styles.notificationContent}>
@@ -78,15 +110,17 @@ const NotificationPage = () => {
                   {notification.title}
                 </Text>
                 <Text style={styles.notificationDescription}>
-                  {notification.description}
+                  {notification.message}
                 </Text>
-                <Text style={styles.notificationDate}>{notification.date}</Text>
+                <Text style={styles.notificationDate}>
+                  {new Date(notification.date).toLocaleDateString()}
+                </Text>
               </View>
               <TouchableOpacity
-                style={styles.arrowContainer}
-                onPress={() => alert('Arrow pressed')}
+                style={styles.clearButton}
+                onPress={() => clearNotification(notification.id)}
               >
-                <FontAwesome5 name="chevron-right" size={20} color="#007B70" />
+                <FontAwesome5 name="times" size={20} color="#FF0000" />
               </TouchableOpacity>
             </View>
           ))}
@@ -94,21 +128,6 @@ const NotificationPage = () => {
       </View>
     </LinearGradient>
   );
-};
-
-const getSeverityColor = (severity: any) => {
-  switch (severity) {
-    case 'red':
-      return '#FF0000'; // Red for severe threat
-    case 'amber':
-      return '#FFBF00'; // Amber for moderate threat
-    case 'yellow':
-      return '#FFFF00'; // Yellow for low threat
-    case 'grey':
-      return '#CCCCCC'; // Grey for non-weather alerts
-    default:
-      return '#CCCCCC'; // Default color
-  }
 };
 
 const styles = StyleSheet.create({
@@ -119,7 +138,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     height: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: Adds slight background to header text
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   headerTitle: {
     fontSize: 30,
@@ -137,7 +156,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
-    paddingBottom: 50, // Ensure bottom nav does not overlap with content
+    paddingBottom: 50,
   },
   notificationCard: {
     backgroundColor: '#fff',
@@ -149,20 +168,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'relative', // Ensure position is relative for absolute children
   },
   severityBar: {
     width: 50,
-    height: '100%', // Span the full height of the card
+    height: '100%',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
-    position: 'absolute', // Position it absolutely
-    left: 0, // Stick to the left
-    top: 0, // Stick to the top
   },
   notificationContent: {
     flex: 1,
-    marginLeft: 70, // Ensure content does not overlap with severity bar
+    marginLeft: 30,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -182,35 +197,8 @@ const styles = StyleSheet.create({
     color: '#aaa',
     marginBottom: 10,
   },
-  arrowContainer: {
+  clearButton: {
     padding: 10,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    right: -6,
-    top: -5,
-    backgroundColor: 'black',
-    borderRadius: 8,
-    padding: 2,
-    paddingHorizontal: 5,
-  },
-  notificationText: {
-    color: '#fff',
-    fontSize: 10,
   },
 });
 
