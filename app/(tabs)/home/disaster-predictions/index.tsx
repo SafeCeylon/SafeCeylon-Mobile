@@ -18,6 +18,35 @@ import { useRouter } from "expo-router";
 import dsdData from "@/constants/dsdData";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
+import floodWarning from "@/assets/images/uploads/warning.png";
+
+const disasterData = {
+  Colombo: { aqi: 0},
+  Kandy: { aqi: 0},
+  Galle: { aqi: 0},
+  Jaffna: { aqi: 0},
+  Matara: { aqi: 0},
+  Trincomalee: { aqi: 0},
+  Anuradhapura: { aqi: 0},
+  Polonnaruwa: { aqi: 0},
+  Kurunegala: { aqi: 0},
+  Ratnapura: { aqi: 0},
+  Badulla: { aqi: 0},
+  Batticaloa: { aqi: 0},
+  Ampara: { aqi: 0},
+  Hambantota: { aqi: 0},
+  Matale: { aqi: 0},
+  Monaragala: { aqi: 0},
+  NuwaraEliya: { aqi: 0},
+  Puttalam: { aqi: 0},
+  Kegalle: { aqi: 0},
+  Vavuniya: { aqi: 0},
+  Mannar: { aqi: 0},
+  Mullaitivu: { aqi: 0},
+  Kilinochchi: { aqi: 0},
+  Kalutara: { aqi: 0},
+  Gampaha: { aqi: 0},
+};
 
 const DisasterPrediction: React.FC = () => {
   const router = useRouter();
@@ -100,10 +129,27 @@ const DisasterPrediction: React.FC = () => {
       const response = await axios.get(
         "http://192.168.1.101:8080/api/users/disaster-data"
       );
-
       const fetchedDisasterData = await response.data;
 
-      // Process the fetched data
+      const airQualityResponse = await axios.get("http://192.168.1.14:8080/api/users/air-quality");
+      const fetchedAirQualityData = await airQualityResponse.data;
+      console.log("Air Quality Data:", fetchedAirQualityData);
+
+      fetchedAirQualityData.forEach((entry) => {
+        const districtName = entry.district;
+        const aqiValue = entry.aqi;
+  
+        // Normalize district names for consistent key matching
+        const normalizedDistrictName = districtName.replace(/\s+/g, '');
+  
+        if (disasterData[normalizedDistrictName]) {
+          // Update existing district's AQI
+          disasterData[normalizedDistrictName].aqi = aqiValue;
+        } else {
+          // Add new district to disasterData
+          disasterData[normalizedDistrictName] = { aqi: aqiValue };
+        }
+      });
 
       processDisasterData(fetchedDisasterData);
     } catch (error) {
@@ -114,59 +160,6 @@ const DisasterPrediction: React.FC = () => {
   useEffect(() => {
     fetchDisasterData();
   }, []);
-
-  const disasterData = {
-    Landslide: {
-      warnings: [
-        { level: "WATCH", color: "#FFFF00" },
-        { level: "ALERT", color: "#FFA500" },
-        { level: "EVACUATE", color: "#FF0000" },
-      ],
-    },
-    AirQuality: {
-      purity: {
-        Colombo: { aqi: 51, pm: 25 },
-        Kandy: { aqi: 48, pm: 24 },
-        Galle: { aqi: 46, pm: 23 },
-        Jaffna: { aqi: 34, pm: 17 },
-        Matara: { aqi: 44, pm: 22 },
-        Trincomalee: { aqi: 40, pm: 20 },
-        Anuradhapura: { aqi: 56, pm: 28 },
-        Polonnaruwa: { aqi: 30, pm: 15 },
-        Kurunegala: { aqi: 46, pm: 23 },
-        Ratnapura: { aqi: 42, pm: 21 },
-        Badulla: { aqi: 54, pm: 27 },
-        Batticaloa: { aqi: 48, pm: 24 },
-        Ampara: { aqi: 42, pm: 21 },
-        Hambantota: { aqi: 38, pm: 19 },
-        Matale: { aqi: 40, pm: 20 },
-        Monaragala: { aqi: 36, pm: 18 },
-        NuwaraEliya: { aqi: 42, pm: 21 },
-        Puttalam: { aqi: 48, pm: 24 },
-        Kegalle: { aqi: 42, pm: 21 },
-        Vavuniya: { aqi: 38, pm: 19 },
-        Mannar: { aqi: 40, pm: 20 },
-        Mullaitivu: { aqi: 36, pm: 18 },
-        Kilinochchi: { aqi: 42, pm: 21 },
-        Kalutara: { aqi: 46, pm: 23 },
-        Gampaha: { aqi: 48, pm: 24 },
-      },
-    },
-    Hurricane: {
-      warnings: [
-        { level: "WATCH", color: "#FFFF00" },
-        { level: "ALERT", color: "#FFA500" },
-        { level: "EVACUATE", color: "#FF0000" },
-      ],
-    },
-    Flood: {
-      warnings: [
-        { level: "WATCH", color: "#FFFF00" },
-        { level: "ALERT", color: "#FFA500" },
-        { level: "EVACUATE", color: "#FF0000" },
-      ],
-    },
-  };
 
   const districts = [
     "Colombo",
@@ -212,70 +205,6 @@ const DisasterPrediction: React.FC = () => {
     });
   };
 
-  const gnDivisionsDataHR = {
-    Kandy: {
-      WATCH: ["Katugastota", "Peradeniya"],
-    },
-    Kurunegala: {
-      WATCH: ["Wariyapola", "Pannala"],
-      ALERT: ["Hettipola", "Bingiriya"],
-    },
-    Ratnapura: {
-      WATCH: ["Pelmadulla", "Kuruwita"],
-      ALERT: ["Embilipitiya", "Eheliyagoda"],
-    },
-    Badulla: {
-      WATCH: ["Bandarawela", "Haputale"],
-    },
-    NuwaraEliya: {
-      WATCH: ["Hatton", "Nanuoya"],
-    },
-    Kalutara: {
-      WATCH: ["Beruwala", "Panadura"],
-      ALERT: ["Horana", "Matugama"],
-      EVACUATE: ["Aluthgama", "Bandaragama"],
-    },
-    Gampaha: {
-      WATCH: ["Negombo", "Minuwangoda"],
-      ALERT: ["Divulapitiya", "Wattala"],
-    },
-  };
-
-  const gnDivisionsDataFL = {
-    Galle: {
-      WATCH: ["Hikkaduwa", "Unawatuna"],
-    },
-    Matara: {
-      WATCH: ["Weligama", "Deniyaya"],
-    },
-    Kurunegala: {
-      WATCH: ["Wariyapola", "Pannala"],
-    },
-    Ratnapura: {
-      WATCH: ["Pelmadulla", "Kuruwita"],
-      ALERT: ["Embilipitiya", "Eheliyagoda"],
-    },
-    Badulla: {
-      WATCH: ["Bandarawela", "Haputale"],
-      ALERT: ["Welimada", "Ella"],
-      EVACUATE: ["Mahiyanganaya", "Passara"],
-    },
-    Kegalle: {
-      WATCH: ["Mawanella", "Warakapola"],
-      ALERT: ["Rambukkana", "Yatiyanthota"],
-    },
-    Kalutara: {
-      WATCH: ["Beruwala", "Panadura"],
-      ALERT: ["Horana", "Matugama"],
-      EVACUATE: ["Aluthgama", "Bandaragama"],
-    },
-    Gampaha: {
-      WATCH: ["Negombo", "Minuwangoda"],
-      ALERT: ["Divulapitiya", "Wattala"],
-      EVACUATE: ["Katana", "Ragama"],
-    },
-  };
-
   const getAirQualityInfo = (airPurity: number) => {
     if (airPurity <= 50) {
       return { color: "#00E400", level: "Good" }; // Green - Good
@@ -293,89 +222,27 @@ const DisasterPrediction: React.FC = () => {
   };
 
   const renderWarningLevels = () => {
-    if (selectedDisaster === "Landslide") {
-      return (
-        <View style={styles.warningContainer}>
-          {disasterData.Landslide.warnings.map((warning, index) => (
-            <View
-              key={index}
-              style={[styles.warningBox, { backgroundColor: warning.color }]}
-            >
-              <Text style={styles.warningText}>
-                Warning Level: {warning.level}
-              </Text>
-            </View>
-          ))}
-        </View>
-      );
-    } else if (selectedDisaster === "Air Quality") {
-      const { aqi, pm } = disasterData.AirQuality.purity[selectedDistrict];
+    if (selectedDisaster === "Air Quality") {
+      const { aqi} = disasterData[selectedDistrict];
       const { color, level } = getAirQualityInfo(aqi);
       return (
         <View style={styles.warningContainer}>
           <View style={[styles.warningBox, { backgroundColor: color }]}>
             <Text style={styles.warningText}>Air Quality Level: {level}</Text>
-            <Text style={styles.warningText}>Micro Particles: {pm} μg/m³</Text>
             <Text style={styles.warningText}>SL AQI Value: {aqi}</Text>
           </View>
         </View>
       );
-    } else if (
-      selectedDisaster === "Hurricane" &&
-      gnDivisionsDataHR[selectedDistrict]
-    ) {
+    } else if ( selectedDisaster === "Floods" ) {
       return (
-        <View style={styles.warningContainer}>
-          {disasterData.Landslide.warnings.map((warning, index) => (
-            <View
-              key={index}
-              style={[styles.warningBox, { backgroundColor: warning.color }]}
-            >
-              <Text style={styles.warningText}>
-                Warning Level: {warning.level}
-              </Text>
-              {gnDivisionsDataHR[selectedDistrict][warning.level] && (
-                <View style={styles.gnDivisionContainer}>
-                  {gnDivisionsDataHR[selectedDistrict][warning.level].map(
-                    (gnDivision, idx) => (
-                      <Text key={idx} style={styles.gnDivisionText}>
-                        {gnDivision}
-                      </Text>
-                    )
-                  )}
-                </View>
-              )}
-            </View>
-          ))}
-        </View>
-      );
-    } else if (
-      selectedDisaster === "Floods" &&
-      gnDivisionsDataFL[selectedDistrict]
-    ) {
-      return (
-        <View style={styles.warningContainer}>
-          {disasterData.Landslide.warnings.map((warning, index) => (
-            <View
-              key={index}
-              style={[styles.warningBox, { backgroundColor: warning.color }]}
-            >
-              <Text style={styles.warningText}>
-                Warning Level: {warning.level}
-              </Text>
-              {gnDivisionsDataFL[selectedDistrict][warning.level] && (
-                <View style={styles.gnDivisionContainer}>
-                  {gnDivisionsDataFL[selectedDistrict][warning.level].map(
-                    (gnDivision, idx) => (
-                      <Text key={idx} style={styles.gnDivisionText}>
-                        {gnDivision}
-                      </Text>
-                    )
-                  )}
-                </View>
-              )}
-            </View>
-          ))}
+        <View style={styles.imageContainer}>
+          <View style={styles.warningBox}>
+              <Image
+                source={floodWarning}
+                style={styles.warningImage}
+                resizeMode="contain"
+              />
+          </View>
         </View>
       );
     }
@@ -386,8 +253,8 @@ const DisasterPrediction: React.FC = () => {
     const mapRegion = {
       latitude: 7.8731,
       longitude: 80.7718,
-      latitudeDelta: 2.8,
-      longitudeDelta: 2.8,
+      latitudeDelta: 3.2,
+      longitudeDelta: 3.2,
     };
 
     return (
@@ -455,14 +322,12 @@ const DisasterPrediction: React.FC = () => {
 
               <Picker.Item label="Air Quality" value="Air Quality" />
 
-              <Picker.Item label="Hurricane" value="Hurricane" />
-
               <Picker.Item label="Floods" value="Floods" />
             </Picker>
           </LinearGradient>
         </View>
 
-        {selectedDisaster !== "Landslide" && (
+        {selectedDisaster === "Air Quality" && (
           <View style={styles.dropdownContainer}>
             <View style={styles.pickerWrapper}>
               <Picker
@@ -788,7 +653,23 @@ const styles = StyleSheet.create({
     color: "#fff",
 
     fontSize: 10,
-  }
+  },
+  imageContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  imageText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  warningImage: {
+    width: 500,
+    height: 600,
+  },
+
 });
 
 export default DisasterPrediction;

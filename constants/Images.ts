@@ -15,4 +15,5 @@ export default {
   splash: require('@/assets/images/splash.png'),
   weatherIcon: require('@/assets/images/weather-icon.png'),
   weather: require('@/assets/images/weather.png'),
+  FloodWarning: require('@/assets/images/uploads/warning.png'),
 };
