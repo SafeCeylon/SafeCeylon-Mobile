@@ -93,6 +93,10 @@ const DisasterPrediction: React.FC = () => {
     try {
       const response = await axios.get('http://192.168.1.14:8080/api/users/disaster-data');
       const fetchedDisasterData = await response.data;
+
+      // const airQualityData = await axios.get('http://192.168.1.14:8080/api/users/air-quality-data');
+      // const fetchedAirQualityData = await airQualityData.data;
+      // console.log(fetchedAirQualityData);
       
       // Process the fetched data
       processDisasterData(fetchedDisasterData);
