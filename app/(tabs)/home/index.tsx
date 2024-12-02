@@ -7,49 +7,95 @@ import {
   StyleSheet,
   ImageBackground,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import images from "@/constants/Images";
 import { useRouter } from "expo-router";
 import moment from "moment";
+import * as Location from "expo-location";
+
+const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+
+const API_KEY = "89db5eb089dbdc51aa2826344d81e51d";
 
 const { width, height } = Dimensions.get("window");
+type Weather = {
+  name: string;
+  main: {
+    temp: number;
+    feels_like: number;
+    humidity: number;
+  };
+  weather: {
+    description: string;
+    main: string;
+  };
+  wind: {
+    speed: number;
+  };
+};
+
+const weatherIcons: { [key: string]: any } = {
+  Thunderstorm: require("@/assets/images/weather/thunderstorm.png"),
+  Drizzle: require("@/assets/images/weather/drizzle.png"),
+  Rain: require("@/assets/images/weather/rain.png"),
+  Snow: require("@/assets/images/weather/snow.png"),
+  Clear: require("@/assets/images/weather/clear.png"),
+  Clouds: require("@/assets/images/weather/clouds.png"),
+  // Mist: require("@/assets/images/weather/mist.png"), // Optional, add other conditions
+  // Smoke: require("@/assets/images/weather/smoke.png"),
+  // Haze: require("@/assets/images/weather/haze.png"),
+  // Dust: require("@/assets/images/weather/dust.png"),
+  // Fog: require("@/assets/images/weather/fog.png"),
+  // Sand: require("@/assets/images/weather/sand.png"),
+  // Ash: require("@/assets/images/weather/ash.png"),
+  // Squall: require("@/assets/images/weather/squall.png"),
+  // Tornado: require("@/assets/images/weather/tornado.png"),
+};
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
-  const [weather, setWeather] = useState({
-    temperature: "27",
-    condition: "",
-    precipitation: "3.7",
-    humidity: "83",
-    wind: "33",
-  });
-
+  const [location, setLocation] = useState<Location.LocationObject>();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [weatherData, setWeatherData] = useState<Weather>();
   const [dateTime, setDateTime] = useState({
     currentDay: moment().format("dddd"),
     currentTime: moment().format("h:mm a"),
   });
 
+  const fetchWeather = async () => {
+    console.log("Fetching Weather Data");
+
+    if (!location) {
+      console.error("Location data not available");
+      return;
+    }
+    // const lat = 5.9496;
+    // const lon = 80.5469;
+    const lat = location?.coords.latitude;
+    const lon = location?.coords.longitude;
+
+    try {
+      const results = await fetch(
+        `${BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+      );
+      const data = await results.json();
+      console.log(JSON.stringify(data, null, 2));
+      setWeatherData(data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  };
+
   useEffect(() => {
-    // Fetch weather data using Google Weather API
-    // const fetchWeather = async () => {
-    //   try {
-    //     const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
-    //     const data = await response.json();
-    //     setWeather({
-    //       temperature: `${data.current.temp_c}`,
-    //       condition: data.current.condition.text,
-    //       precipitation: `${data.current.precip_mm}`,
-    //       humidity: `${data.current.humidity}`,
-    //       wind: `${data.current.wind_kph}`,
-    //     });
-    //   } catch (error) {
-    //     console.error("Error fetching weather data:", error);
-    //   }
-    // };
+    if (location) {
+      console.log(location);
+      fetchWeather();
+    }
+  }, [location]);
 
-    // fetchWeather();
-
+  useEffect(() => {
     const intervalId = setInterval(() => {
       setDateTime({
         currentDay: moment().format("dddd"),
@@ -59,6 +105,27 @@ const HomeScreen: React.FC = () => {
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location);
+      setLocation(location);
+    })();
+  }, []);
+
+  if (!weatherData) {
+    return <ActivityIndicator size="large" color="#FF9900" />;
+  }
+
+  const weatherCondition = weatherData.weather[0]?.main || "Clear";
+  const weatherIcon = weatherIcons[weatherCondition] || weatherIcons["Clear"];
 
   return (
     <View style={styles.container}>
@@ -74,18 +141,24 @@ const HomeScreen: React.FC = () => {
       <View style={styles.weatherContainer}>
         <View style={styles.weatherBackground}>
           <View style={styles.weatherInfoContainer}>
-            <Image source={images.weather} style={styles.weatherIcon} />
+            <View style={styles.weatherIconContainer}>
+              <Image source={weatherIcon} style={styles.weatherIcon} />
+              <Text style={styles.weatherDetails2}>
+                {weatherData.weather[0]?.main}
+              </Text>
+            </View>
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
-              <Text style={styles.weatherCondition}>{weather.condition}</Text>
-              <Text style={styles.weatherDetails}>
-                Precipitation: {weather.precipitation} mm
+              <Text style={styles.weatherTemp}>
+                {Math.floor(weatherData.main.temp)} °C
+              </Text>
+              <Text style={styles.weatherCondition}>
+                Feels {weatherData.main.feels_like}°C
               </Text>
               <Text style={styles.weatherDetails}>
-                Humidity: {weather.humidity} %
+                Humidity: {weatherData.main.humidity} %
               </Text>
               <Text style={styles.weatherDetails}>
-                Wind: {weather.wind} km/h
+                Wind: {weatherData.wind.speed} km/h
               </Text>
             </View>
           </View>
@@ -93,6 +166,7 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.weatherToday}>Today</Text>
             <Text style={styles.weatherDay}>{dateTime.currentDay}</Text>
             <Text style={styles.weatherTime}>{dateTime.currentTime}</Text>
+            <Text style={styles.weatherTime}>{weatherData.name}</Text>
           </View>
         </View>
       </View>
@@ -236,11 +310,21 @@ const styles = StyleSheet.create({
   },
 
   weatherIcon: {
-    width: width * 0.1,
+    width: width * 0.2,
 
-    height: width * 0.1,
+    height: width * 0.25,
 
     marginRight: 10,
+
+    resizeMode: "contain",
+  },
+
+  
+  weatherIconContainer: {
+    flexDirection: "column",  // Stack icon and text vertically
+    alignItems: "center",  // Center the items horizontally within the container
+    justifyContent: "center",
+    marginRight: 10,  // Adjust space between icon and details
   },
 
   weatherDetailsContainer: {
@@ -266,7 +350,13 @@ const styles = StyleSheet.create({
 
     fontSize: width * 0.035,
   },
+  weatherDetails2: {
+    color: "#333",
 
+    fontSize: width * 0.05,
+
+    fontWeight: "bold",
+  },
   weatherDateContainer: {
     alignItems: "flex-end",
   },

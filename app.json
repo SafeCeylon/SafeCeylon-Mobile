@@ -12,6 +12,17 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysPermission": "Allow SafeCeylon to access your location even when the app is closed.",
+          "locationWhenInUsePermission": "Allow SafeCeylon to access your location while the app is in use."
+        }
+      ],
+      "expo-router",
+      "expo-font"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -22,24 +33,19 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "NEXT_PUBLIC_MAPS_API_KEY=AIzaSyD2OOcCZIQ_ywmsa1CXSTmEgitI-9h5xbw"
+          "apiKey": "AIzaSyD2OOcCZIQ_ywmsa1CXSTmEgitI-9h5xbw"
         }
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
-      ],
-      "newArchEnabled": true
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-font"
-    ],
     "experiments": {
       "typedRoutes": true
     }
