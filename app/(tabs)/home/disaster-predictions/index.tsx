@@ -131,7 +131,7 @@ const DisasterPrediction: React.FC = () => {
       );
       const fetchedDisasterData = await response.data;
 
-      const airQualityResponse = await axios.get("http://192.168.1.14:8080/api/users/air-quality");
+      const airQualityResponse = await axios.get("http://192.168.1.101:8080/api/users/air-quality");
       const fetchedAirQualityData = await airQualityResponse.data;
       console.log("Air Quality Data:", fetchedAirQualityData);
 
