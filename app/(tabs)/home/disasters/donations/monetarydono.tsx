@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "90%",
-    height: 40,
+    height: 50,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 20,
@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: "90%",
+    height: 50,
     alignItems: "center",
     marginVertical: 20,
     shadowColor: "#000",
