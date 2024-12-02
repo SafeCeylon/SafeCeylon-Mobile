@@ -18,6 +18,7 @@ import disasterIcon from '@/assets/images/disaster.png';
 import { useRouter } from 'expo-router';
 import dsdData from '@/constants/dsdData';
 import axios from 'axios';
+import { Icon } from 'react-native-elements';
 
 const DisasterPrediction: React.FC = () => {
   const router = useRouter();
@@ -622,7 +623,7 @@ const styles = StyleSheet.create({
   notificationText: {
     color: '#fff',
     fontSize: 10,
-  },
+  }
 });
 
 export default DisasterPrediction;

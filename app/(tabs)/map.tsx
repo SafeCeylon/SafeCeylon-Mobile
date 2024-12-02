@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Image
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import MapView, { Marker, Polygon } from 'react-native-maps';
@@ -167,14 +168,14 @@ const MapPage: React.FC = () => {
   const getDisasterColors = (type: string) => {
     switch (type) {
       case 'Flood':
-        return { fillColor: 'rgba(0, 0, 255, 0.2)', strokeColor: 'rgba(0, 0, 255, 0.8)' };
+        return { fillColor: 'rgba(173, 216, 230, 0.5)', strokeColor: 'rgba(173, 216, 230, 1)' }; // Light blue
       case 'Hurricane':
-        return { fillColor: 'rgba(255, 0, 0, 0.2)', strokeColor: 'rgba(255, 0, 0, 0.8)' };
+        return { fillColor: 'rgba(211, 211, 211, 0.5)', strokeColor: 'rgba(211, 211, 211, 1)' }; // Light gray
       case 'Landslide':
-        return { fillColor: 'rgba(0, 255, 0, 0.2)', strokeColor: 'rgba(0, 255, 0, 0.8)' };
+        return { fillColor: 'rgba(210, 180, 140, 0.5)', strokeColor: 'rgba(210, 180, 140, 1)' }; // Light brown
       default:
         return { fillColor: 'rgba(0, 0, 0, 0.2)', strokeColor: 'rgba(0, 0, 0, 0.8)' };
-    }
+    }    
   };
 
   return (
@@ -482,6 +483,6 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontSize: 16,
       textAlign: 'center',
-    },
+    }
   });
 export default MapPage;
