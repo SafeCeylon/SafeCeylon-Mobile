@@ -15,6 +15,9 @@ import axios from 'axios';
 import icons from '@/constants/Icons';
 import { useRouter } from 'expo-router';
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import hurricane from '@/assets/images/icons/hurricane.png';
+import flood from '@/assets/images/icons/flood.png';
+import landslide from '@/assets/images/icons/landslide.png';
 
 // Define TypeScript types
 interface Disaster {
@@ -168,9 +171,9 @@ const MapPage: React.FC = () => {
   const getDisasterColors = (type: string) => {
     switch (type) {
       case 'Flood':
-        return { fillColor: 'rgba(173, 216, 230, 0.5)', strokeColor: 'rgba(173, 216, 230, 1)' }; // Light blue
+        return { fillColor: 'rgba(0, 0, 255, 0.2)', strokeColor: 'rgba(0, 0, 255, 0.7)' }; // Light blue
       case 'Hurricane':
-        return { fillColor: 'rgba(211, 211, 211, 0.5)', strokeColor: 'rgba(211, 211, 211, 1)' }; // Light gray
+        return { fillColor: 'rgba(0, 0, 0, 0.2)', strokeColor: 'rgba(0, 0, 0, 0.6)' }; // Light gray
       case 'Landslide':
         return { fillColor: 'rgba(210, 180, 140, 0.5)', strokeColor: 'rgba(210, 180, 140, 1)' }; // Light brown
       default:
@@ -196,14 +199,33 @@ const MapPage: React.FC = () => {
           const { latitude, longitude, radius, type } = disaster;
           const { fillColor, strokeColor } = getDisasterColors(type);
           const circlePoints = generateCirclePoints(latitude, longitude, radius);
+
+          // Determine the disaster icon based on type
+          const disasterIcon =
+            type === 'Flood' ? flood :
+            type === 'Hurricane' ? hurricane :
+            type === 'Landslide' ? landslide : null;
+
           return (
-            <Polygon
-              key={index}
-              coordinates={circlePoints}
-              fillColor={fillColor}
-              strokeColor={strokeColor}
-              strokeWidth={2}
-            />
+            <React.Fragment key={index}>
+              {/* Draw the disaster area */}
+              <Polygon
+                coordinates={circlePoints}
+                fillColor={fillColor}
+                strokeColor={strokeColor}
+                strokeWidth={2}
+              />
+
+              {/* Place the disaster icon in the center */}
+              {disasterIcon && (
+                <Marker
+                  coordinate={{ latitude, longitude }}
+                  anchor={{ x: 0.5, y: 0.5 }} // Center the icon
+                >
+                  <Image source={disasterIcon} style={{ width: 30, height: 30 }} />
+                </Marker>
+              )}
+            </React.Fragment>
           );
         })}
 

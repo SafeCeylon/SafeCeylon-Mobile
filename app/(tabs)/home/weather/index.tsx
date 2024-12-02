@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   mapContainer: {
-    height: '100%',
+    height: 450,
     width: '95%',
     marginBottom: 10,
     flex: 1,
