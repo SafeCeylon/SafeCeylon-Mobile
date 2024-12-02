@@ -146,120 +146,6 @@ const DisastersScreen: React.FC = () => {
     fetchDisasters();
   }, []);
 
-  const [disasters, setDisasters] = useState<Disaster[]>([]);
-
-  const calculateDistanceToEdge = (
-    userLat: number,
-
-    userLon: number,
-
-    disasterLat: number,
-
-    disasterLon: number,
-
-    radius: number
-  ): number => {
-    const R = 6371e3; // Radius of Earth in meters
-
-    const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
-
-    const φ1 = toRadians(userLat);
-
-    const φ2 = toRadians(disasterLat);
-
-    const Δφ = toRadians(disasterLat - userLat);
-
-    const Δλ = toRadians(disasterLon - userLon);
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    const distanceToCenter = R * c; // Distance from user to disaster center in meters
-
-    const distanceToEdge = Math.max(0, distanceToCenter - radius); // Distance to edge (cannot be negative)
-
-    return distanceToEdge;
-  };
-
-  useEffect(() => {
-    const fetchDisasters = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-
-        // Fetch disasters
-
-        const response = await axios.get<Disaster[]>(
-          "http://192.168.1.101:8080/api/users/all-disasters",
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // Fetch user data for home location
-
-        const userDataResponse = await axios.post(
-          "http://192.168.1.101:8080/api/users/userdata",
-
-          {},
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const { latitude: userLat, longitude: userLon } = userDataResponse.data;
-
-        const categorizedDisasters = response.data.map((disaster) => {
-          const distanceToEdge = calculateDistanceToEdge(
-            userLat,
-
-            userLon,
-
-            disaster.latitude,
-
-            disaster.longitude,
-
-            disaster.radius
-          );
-
-          let category: "Danger" | "Watchout" | "Safe";
-
-          if (distanceToEdge === 0) {
-            category = "Danger";
-          } else if (distanceToEdge <= 1000) {
-            category = "Watchout";
-          } else {
-            category = "Safe";
-          }
-
-          return { ...disaster, category, distance: distanceToEdge };
-        });
-
-        // Sort disasters by danger level
-
-        const sortedDisasters = categorizedDisasters.sort((a, b) => {
-          const order = { Danger: 1, Watchout: 2, Safe: 3 };
-
-          return order[a.category!] - order[b.category!];
-        });
-
-        setDisasters(sortedDisasters);
-      } catch (error) {
-        console.error("Error fetching disasters:", error);
-      }
-    };
-
-    fetchDisasters();
-  }, []);
-
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -346,7 +232,7 @@ const DisastersScreen: React.FC = () => {
                             try {
                               const token = await AsyncStorage.getItem("token");
                               await axios.post(
-                                "http://192.168.1.101:8080/api/users/add-victim",
+                                "http://192.168.1.14:8080/api/users/add-victim",
                                 { disasterId: disaster.id },
                                 {
                                   headers: {

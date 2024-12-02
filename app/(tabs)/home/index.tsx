@@ -70,11 +70,11 @@ const HomeScreen: React.FC = () => {
     if (!location) {
       console.error("Location data not available");
       return;
-    }
-    // const lat = 5.9496;
-    // const lon = 80.5469;
-    const lat = location?.coords.latitude;
-    const lon = location?.coords.longitude;
+    } 
+    const lat = 6.902434491281895;
+    const lon = 79.86119581089227;
+    // const lat = location?.coords.latitude;
+    // const lon = location?.coords.longitude;
 
     try {
       const results = await fetch(

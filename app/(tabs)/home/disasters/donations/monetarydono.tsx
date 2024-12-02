@@ -70,7 +70,7 @@ const DonationsScreen: React.FC = () => {
       const token = await AsyncStorage.getItem("token");
 
       const response = await axios.post(
-        "http://192.168.1.101:8080/api/users/add-mono-donation",
+        "http://192.168.1.14:8080/api/users/add-mono-donation",
 
         {
           amount,
@@ -93,38 +93,6 @@ const DonationsScreen: React.FC = () => {
     }
   };
 
-  const handleDonatePress = async () => {
-    if (!termsAccepted) {
-      Alert.alert('Terms and Conditions', 'You must agree to the terms and conditions.');
-      return;
-    }
-
-    const amount = otherAmount || selectedAmount;
-    if (!amount || !firstName || !lastName || !cardNumber || !expireDate || !cvc) {
-      Alert.alert('Incomplete Details', 'Please fill all required fields.');
-      return;
-    }
-
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await axios.post(
-        'http://192.168.1.14:8080/api/users/add-mono-donation',
-        {
-          amount
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      Alert.alert('Success', 'Donation successful!');
-      router.push('/home');
-    } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Error', 'Failed to process your donation.');
-    }
-  };
 
   return (
     <View style={styles.container}>
