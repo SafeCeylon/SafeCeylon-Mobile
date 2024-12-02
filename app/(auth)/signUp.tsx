@@ -14,7 +14,6 @@ import { useRouter } from 'expo-router';
 import axios, { AxiosError } from 'axios';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
-// import bcrypt from 'bcryptjs';
 import images from '@/constants/Images';
 import { MapPressEvent } from 'react-native-maps';
 
@@ -42,7 +41,10 @@ const SignUpPage = () => {
     const getCurrentLocation = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
+        Alert.alert(
+          'Permission Denied',
+          'Location permission is required to use this feature.'
+        );
         return;
       }
 
@@ -70,16 +72,24 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = async () => {
-    if (!name || !nic || !mobileNumber || !email || !password || !confirmPassword || !address) {
+    if (
+      !name ||
+      !nic ||
+      !mobileNumber ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !address
+    ) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-  
+
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-  
+
     try {
       const userData = {
         name,
@@ -91,19 +101,22 @@ const SignUpPage = () => {
         longitude: markerCoordinate.longitude,
         password,
       };
-  
-      const response = await axios.post(`http://192.168.1.14:8080/api/users/register`, userData);
-  
-      if (response.status === 201) { // 201 is HttpStatus.CREATED
+
+      const response = await axios.post(
+        `http://192.168.1.101:8080/api/users/register`,
+        userData
+      );
+
+      if (response.status === 201) {
         Alert.alert('Success', 'User registered successfully!');
         router.push('/signIn');
       } else {
         Alert.alert('Error', 'Unexpected response from server.');
       }
     } catch (err) {
-      const error = err as AxiosError; // Cast 'err' to 'AxiosError'
-  
-      if (error.response && error.response.status === 409) { // 409 is HttpStatus.CONFLICT
+      const error = err as AxiosError;
+
+      if (error.response && error.response.status === 409) {
         Alert.alert('Error', 'User already exists.');
       } else {
         console.error(error);
@@ -111,7 +124,7 @@ const SignUpPage = () => {
       }
     }
   };
-  
+
   return (
     <LinearGradient
       colors={['#007B70', '#00E1CD']}
@@ -126,6 +139,7 @@ const SignUpPage = () => {
         </View>
 
         <View style={styles.formContainer}>
+          <Text style={styles.welcomeText}>Create Your Account</Text>
           <TextInput
             style={styles.input}
             placeholder="Full Name"
@@ -161,14 +175,10 @@ const SignUpPage = () => {
             onChangeText={setAddress}
           />
 
-          <Text style={styles.mapInstruction}>
+          <Text style={styles.instructionText}>
             Tap on the map to place a marker at your home location.
           </Text>
-          <MapView
-            style={styles.map}
-            region={region}
-            onPress={handleMapPress}
-          >
+          <MapView style={styles.map} region={region} onPress={handleMapPress}>
             <Marker coordinate={markerCoordinate} />
           </MapView>
 
@@ -203,22 +213,99 @@ const SignUpPage = () => {
 };
 
 const styles = StyleSheet.create({
-  gradientBackground: { flex: 1 },
-  scrollContainer: { flexGrow: 1 },
-  headerContainer: { alignItems: 'center', marginVertical: 20 },
-  logo: { width: 100, height: 100 },
-  title: { fontSize: 24, fontWeight: 'bold', marginTop: 10 },
-  formContainer: { padding: 20 },
-  input: { backgroundColor: '#fff', marginBottom: 10, padding: 10, borderRadius: 5 },
-  map: { width: '100%', height: 200, marginVertical: 15 },
-  mapInstruction: { textAlign: 'center', marginBottom: 10, fontStyle: 'italic' },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
-  halfInput: { flex: 1, marginHorizontal: 5 },
-  button: { backgroundColor: '#007B70', padding: 10, borderRadius: 5, marginBottom: 10 },
-  buttonText: { color: '#fff', textAlign: 'center' },
-  signUpButton: { marginTop: 20 },
-  gradientButton: { padding: 15, borderRadius: 5, alignItems: 'center' },
-  signUpText: { color: '#fff', fontWeight: 'bold' },
+  gradientBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+  headerContainer: {
+    marginTop: '15%',
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  logo: {
+    width: '60%',
+    height: 50,
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  formContainer: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
+  welcomeText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  instructionText: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  map: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  halfInput: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  signUpButton: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  gradientButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  signUpText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
 
 export default SignUpPage;

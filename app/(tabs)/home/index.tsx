@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,58 +7,125 @@ import {
   StyleSheet,
   ImageBackground,
   Dimensions,
-} from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
-import images from '@/constants/Images';
-import { useRouter } from 'expo-router';
-import moment from 'moment';
+  ActivityIndicator,
+} from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import images from "@/constants/Images";
+import { useRouter } from "expo-router";
+import moment from "moment";
+import * as Location from "expo-location";
 
-const { width, height } = Dimensions.get('window');
+const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+
+const API_KEY = "89db5eb089dbdc51aa2826344d81e51d";
+
+const { width, height } = Dimensions.get("window");
+type Weather = {
+  name: string;
+  main: {
+    temp: number;
+    feels_like: number;
+    humidity: number;
+  };
+  weather: {
+    description: string;
+    main: string;
+  };
+  wind: {
+    speed: number;
+  };
+};
+
+const weatherIcons: { [key: string]: any } = {
+  Thunderstorm: require("@/assets/images/weather/thunderstorm.png"),
+  Drizzle: require("@/assets/images/weather/drizzle.png"),
+  Rain: require("@/assets/images/weather/rain.png"),
+  Snow: require("@/assets/images/weather/snow.png"),
+  Clear: require("@/assets/images/weather/clear.png"),
+  Clouds: require("@/assets/images/weather/clouds.png"),
+  // Mist: require("@/assets/images/weather/mist.png"), // Optional, add other conditions
+  // Smoke: require("@/assets/images/weather/smoke.png"),
+  // Haze: require("@/assets/images/weather/haze.png"),
+  // Dust: require("@/assets/images/weather/dust.png"),
+  // Fog: require("@/assets/images/weather/fog.png"),
+  // Sand: require("@/assets/images/weather/sand.png"),
+  // Ash: require("@/assets/images/weather/ash.png"),
+  // Squall: require("@/assets/images/weather/squall.png"),
+  // Tornado: require("@/assets/images/weather/tornado.png"),
+};
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
-  const [weather, setWeather] = useState({
-    temperature: '27',
-    condition: '',
-    precipitation: '3.7',
-    humidity: '83',
-    wind: '33',
+  const [location, setLocation] = useState<Location.LocationObject>();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [weatherData, setWeatherData] = useState<Weather>();
+  const [dateTime, setDateTime] = useState({
+    currentDay: moment().format("dddd"),
+    currentTime: moment().format("h:mm a"),
   });
 
-  const [dateTime, setDateTime] = useState({
-    currentDay: moment().format('dddd'),
-    currentTime: moment().format('h:mm a'),
-  });
+  const fetchWeather = async () => {
+    console.log("Fetching Weather Data");
+
+    if (!location) {
+      console.error("Location data not available");
+      return;
+    }
+    // const lat = 5.9496;
+    // const lon = 80.5469;
+    const lat = location?.coords.latitude;
+    const lon = location?.coords.longitude;
+
+    try {
+      const results = await fetch(
+        `${BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+      );
+      const data = await results.json();
+      console.log(JSON.stringify(data, null, 2));
+      setWeatherData(data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch weather data using Google Weather API
-    // const fetchWeather = async () => {
-    //   try {
-    //     const response = await fetch("YOUR_GOOGLE_WEATHER_API_URL");
-    //     const data = await response.json();
-    //     setWeather({
-    //       temperature: `${data.current.temp_c}`,
-    //       condition: data.current.condition.text,
-    //       precipitation: `${data.current.precip_mm}`,
-    //       humidity: `${data.current.humidity}`,
-    //       wind: `${data.current.wind_kph}`,
-    //     });
-    //   } catch (error) {
-    //     console.error("Error fetching weather data:", error);
-    //   }
-    // };
+    if (location) {
+      console.log(location);
+      fetchWeather();
+    }
+  }, [location]);
 
-    // fetchWeather();
-
+  useEffect(() => {
     const intervalId = setInterval(() => {
       setDateTime({
-        currentDay: moment().format('dddd'),
-        currentTime: moment().format('h:mm a'),
+        currentDay: moment().format("dddd"),
+        currentTime: moment().format("h:mm a"),
       });
     }, 1000); // Update every second
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location);
+      setLocation(location);
+    })();
+  }, []);
+
+  if (!weatherData) {
+    return <ActivityIndicator size="large" color="#FF9900" />;
+  }
+
+  const weatherCondition = weatherData.weather[0]?.main || "Clear";
+  const weatherIcon = weatherIcons[weatherCondition] || weatherIcons["Clear"];
 
   return (
     <View style={styles.container}>
@@ -74,18 +141,24 @@ const HomeScreen: React.FC = () => {
       <View style={styles.weatherContainer}>
         <View style={styles.weatherBackground}>
           <View style={styles.weatherInfoContainer}>
-            <Image source={images.weather} style={styles.weatherIcon} />
+            <View style={styles.weatherIconContainer}>
+              <Image source={weatherIcon} style={styles.weatherIcon} />
+              <Text style={styles.weatherDetails2}>
+                {weatherData.weather[0]?.main}
+              </Text>
+            </View>
             <View style={styles.weatherDetailsContainer}>
-              <Text style={styles.weatherTemp}>{weather.temperature} °C</Text>
-              <Text style={styles.weatherCondition}>{weather.condition}</Text>
-              <Text style={styles.weatherDetails}>
-                Precipitation: {weather.precipitation} mm
+              <Text style={styles.weatherTemp}>
+                {Math.floor(weatherData.main.temp)} °C
+              </Text>
+              <Text style={styles.weatherCondition}>
+                Feels {weatherData.main.feels_like}°C
               </Text>
               <Text style={styles.weatherDetails}>
-                Humidity: {weather.humidity} %
+                Humidity: {weatherData.main.humidity} %
               </Text>
               <Text style={styles.weatherDetails}>
-                Wind: {weather.wind} km/h
+                Wind: {weatherData.wind.speed} km/h
               </Text>
             </View>
           </View>
@@ -93,13 +166,14 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.weatherToday}>Today</Text>
             <Text style={styles.weatherDay}>{dateTime.currentDay}</Text>
             <Text style={styles.weatherTime}>{dateTime.currentTime}</Text>
+            <Text style={styles.weatherTime}>{weatherData.name}</Text>
           </View>
         </View>
       </View>
       <View style={styles.cardContainer}>
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/home/weather')}
+          onPress={() => router.push("/home/weather")}
         >
           <Image source={images.weather} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -116,7 +190,7 @@ const HomeScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/home/disasters')}
+          onPress={() => router.push("/home/disasters")}
         >
           <Image source={images.disaster} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -133,7 +207,7 @@ const HomeScreen: React.FC = () => {
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => router.push('/home/disaster-predictions')}
+          onPress={() => router.push("/home/disaster-predictions")}
         >
           <Image source={images.predictions} style={styles.cardImage} />
           <View style={styles.cardContent}>
@@ -151,7 +225,7 @@ const HomeScreen: React.FC = () => {
 
       <TouchableOpacity
         style={styles.sosButton}
-        onPress={() => router.push('/home/sos')}
+        onPress={() => router.push("/home/sos")}
       >
         <Text style={styles.sosText}>SOS</Text>
       </TouchableOpacity>
@@ -162,188 +236,330 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+
+    justifyContent: "space-between",
   },
   headerBackgroundImage: {
-    width: '100%',
+    width: "100%",
+
     height: height * 0.3,
+
     // justifyContent: "center",
-    alignItems: 'center',
+
+    alignItems: "center",
   },
+
   headerContent: {
-    alignItems: 'center',
+    alignItems: "center",
+
     paddingVertical: 10,
   },
+
   logo: {
     width: width * 0.6,
+
     height: height * 0.12,
+
     marginTop: height * 0.05,
-    resizeMode: 'contain',
+
+    resizeMode: "contain",
   },
+
   weatherContainer: {
-    position: 'absolute',
+    position: "absolute",
+
     top: height * 0.2, // Adjust this value as needed to create the overlap
-    width: '100%',
-    alignItems: 'center',
+
+    width: "100%",
+
+    alignItems: "center",
+
     zIndex: 2,
   },
+
   weatherBackground: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+
     borderRadius: 10,
+
     padding: 10,
-    width: '90%',
+
+    width: "90%",
+
     zIndex: 1,
-    shadowColor: '#000',
+
+    shadowColor: "#000",
+
     shadowOffset: { width: 0, height: 2 },
+
     shadowOpacity: 0.2,
+
     shadowRadius: 4,
+
     elevation: 5, // Add this for Android shadow
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+    flexDirection: "row",
+
+    justifyContent: "space-between",
   },
+
   weatherInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+
+    alignItems: "center",
   },
+
   weatherIcon: {
-    width: width * 0.25,
+    width: width * 0.2,
+
     height: width * 0.25,
+
     marginRight: 10,
+
+    resizeMode: "contain",
   },
+
+  
+  weatherIconContainer: {
+    flexDirection: "column",  // Stack icon and text vertically
+    alignItems: "center",  // Center the items horizontally within the container
+    justifyContent: "center",
+    marginRight: 10,  // Adjust space between icon and details
+  },
+
   weatherDetailsContainer: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
+
   weatherTemp: {
-    color: '#333',
+    color: "#333",
+
     fontSize: width * 0.09,
-    fontWeight: 'bold',
+
+    fontWeight: "bold",
   },
+
   weatherCondition: {
-    color: '#333',
+    color: "#333",
+
     fontSize: width * 0.045,
   },
+
   weatherDetails: {
-    color: '#777',
+    color: "#777",
+
     fontSize: width * 0.035,
+  },
+  weatherDetails2: {
+    color: "#333",
+
+    fontSize: width * 0.05,
+
+    fontWeight: "bold",
   },
   weatherDateContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
+
   weatherToday: {
-    color: '#333',
+    color: "#333",
+
     fontSize: width * 0.045,
-    fontWeight: 'bold',
+
+    fontWeight: "bold",
   },
+
   weatherDay: {
-    color: '#777',
+    color: "#777",
+
     fontSize: width * 0.04,
   },
+
   weatherTime: {
-    color: '#777',
+    color: "#777",
+
     fontSize: width * 0.04,
   },
+
   cardContainer: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
 
-    marginTop: height * 0.09, // Adjust this value to position the cards correctly below the weather container
+    justifyContent: "space-between",
+
+    alignItems: "center",
+
+    marginTop: height * 0.08, // Adjust this value to position the cards correctly below the weather container
   },
+
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+
+    alignItems: "center",
+
+    backgroundColor: "#fff",
+
     marginVertical: 5,
+
     borderRadius: 10,
-    shadowColor: '#000',
+
+    shadowColor: "#000",
+
     shadowOpacity: 0.2,
+
     shadowRadius: 4,
+
     shadowOffset: { width: 0, height: 2 },
+
     elevation: 5, // Add this for Android shadow
-    width: '90%',
+
+    width: "90%",
+
     height: height * 0.15,
+
+    padding: 0,
   },
+
   cardImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+
+    height: "100%",
+
     borderRadius: 10,
-    position: 'absolute',
+
+    position: "absolute",
+
     top: 0,
+
     left: 0,
   },
+
   cardContent: {
     flex: 1,
+
     paddingHorizontal: width * 0.08,
+
     paddingVertical: 10,
+
     zIndex: 1,
+
     marginRight: width * 0.1,
   },
+
   cardTitle: {
     fontSize: width * 0.06,
-    fontWeight: 'bold',
+
+    fontWeight: "bold",
+
     marginBottom: 10,
-    color: '#FF9900',
+
+    color: "#FF9900",
   },
+
   cardDescription: {
     fontSize: width * 0.035,
-    color: '#fff',
+
+    color: "#fff",
   },
+
   arrowContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+
     width: width * 0.12,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+
+    height: "100%",
+
+    justifyContent: "center",
+
+    alignItems: "center",
+
     borderTopRightRadius: 10,
+
     borderBottomRightRadius: 10,
-    position: 'absolute',
+
+    position: "absolute",
+
     right: 0,
   },
+
   sosButton: {
-    backgroundColor: '#FF9900',
-    borderRadius: 20,
+    backgroundColor: "#FF9900",
+
+    borderRadius: 30,
+
     paddingVertical: 5,
+
     paddingHorizontal: 5,
+
     marginVertical: 20,
-    alignSelf: 'center',
-    shadowColor: '#000',
+
+    alignSelf: "center",
+
+    shadowColor: "#000",
+
     shadowOffset: { width: 0, height: 2 },
+
     shadowOpacity: 0.2,
+
     shadowRadius: 4,
+
     elevation: 5, // Add this for Android shadow
   },
+
   sosText: {
-    color: '#fff',
+    color: "#fff",
+
     fontSize: width * 0.06,
-    fontWeight: 'bold',
-    borderRadius: 15,
+
+    fontWeight: "bold",
+
+    borderRadius: 30,
+
     paddingVertical: 5,
+
     paddingHorizontal: 50,
+
     borderWidth: 2,
-    borderColor: '#fff',
+
+    borderColor: "#fff",
   },
+
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+
+    justifyContent: "space-around",
+
+    backgroundColor: "#fff",
+
     paddingVertical: 10,
+
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+
+    borderTopColor: "#ccc",
   },
+
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
+
   notificationBadge: {
-    position: 'absolute',
+    position: "absolute",
+
     right: -6,
+
     top: -5,
-    backgroundColor: 'black',
+
+    backgroundColor: "black",
+
     borderRadius: 8,
+
     padding: 2,
+
     paddingHorizontal: 5,
   },
+
   notificationText: {
-    color: '#fff',
+    color: "#fff",
+
     fontSize: 10,
   },
 });

@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
   mapContainer: {
     height: '100%',
     width: '95%',
-    marginBottom: 20,
+    marginBottom: 10,
     flex: 1,
   },
   map: {

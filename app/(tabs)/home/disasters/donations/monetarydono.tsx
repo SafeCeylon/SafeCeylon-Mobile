@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,33 +10,87 @@ import {
   ImageBackground,
   TextInput,
   Alert,
-} from 'react-native';
-import { CheckBox } from 'react-native-elements';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import images from '@/constants/Images';
-import { router } from 'expo-router';
-
-const { width, height } = Dimensions.get('window');
+} from "react-native";
+import { CheckBox } from "react-native-elements";
+import { useRouter } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import images from "@/constants/Images";
+import icons from "@/constants/Icons";
+import { router } from "expo-router";
+const { width, height } = Dimensions.get("window");
 
 const DonationsScreen: React.FC = () => {
-  const [selectedAmount, setSelectedAmount] = useState('');
-  const [otherAmount, setOtherAmount] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expireDate, setExpireDate] = useState('');
-  const [cvc, setCvc] = useState('');
+  const router = useRouter();
+  const [selectedAmount, setSelectedAmount] = useState("");
+  const [otherAmount, setOtherAmount] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expireDate, setExpireDate] = useState("");
+  const [cvc, setCvc] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleAmountPress = (amount: string) => {
     setSelectedAmount(amount);
-    setOtherAmount('');
+    setOtherAmount("");
   };
 
   const handleOtherAmountChange = (amount: string) => {
     setOtherAmount(amount);
-    setSelectedAmount('');
+    setSelectedAmount("");
+  };
+
+  const handleDonatePress = async () => {
+    if (!termsAccepted) {
+      Alert.alert(
+        "Terms and Conditions",
+        "You must agree to the terms and conditions."
+      );
+
+      return;
+    }
+
+    const amount = otherAmount || selectedAmount;
+
+    if (
+      !amount ||
+      !firstName ||
+      !lastName ||
+      !cardNumber ||
+      !expireDate ||
+      !cvc
+    ) {
+      Alert.alert("Incomplete Details", "Please fill all required fields.");
+
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      const response = await axios.post(
+        "http://192.168.1.101:8080/api/users/add-mono-donation",
+
+        {
+          amount,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Alert.alert("Success", "Donation successful!");
+
+      router.push("/home");
+    } catch (error) {
+      console.error("Error:", error);
+
+      Alert.alert("Error", "Failed to process your donation.");
+    }
   };
 
   const handleDonatePress = async () => {
@@ -102,27 +156,27 @@ const DonationsScreen: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.amountButton,
-                selectedAmount === '5000' && styles.selectedAmountButton,
+                selectedAmount === "5000" && styles.selectedAmountButton,
               ]}
-              onPress={() => handleAmountPress('5000')}
+              onPress={() => handleAmountPress("5000")}
             >
               <Text style={styles.amountButtonText}>LKR 5000</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.amountButton,
-                selectedAmount === '10000' && styles.selectedAmountButton,
+                selectedAmount === "10000" && styles.selectedAmountButton,
               ]}
-              onPress={() => handleAmountPress('10000')}
+              onPress={() => handleAmountPress("10000")}
             >
               <Text style={styles.amountButtonText}>LKR 10000</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.amountButton,
-                selectedAmount === '15000' && styles.selectedAmountButton,
+                selectedAmount === "15000" && styles.selectedAmountButton,
               ]}
-              onPress={() => handleAmountPress('15000')}
+              onPress={() => handleAmountPress("15000")}
             >
               <Text style={styles.amountButtonText}>LKR 15000</Text>
             </TouchableOpacity>
@@ -172,7 +226,10 @@ const DonationsScreen: React.FC = () => {
             checked={termsAccepted}
             onPress={() => setTermsAccepted(!termsAccepted)}
           />
-          <TouchableOpacity style={styles.donateButton} onPress={handleDonatePress}>
+          <TouchableOpacity
+            style={styles.donateButton}
+            onPress={handleDonatePress}
+          >
             <Text style={styles.donateButtonText}>DONATE</Text>
           </TouchableOpacity>
         </View>
@@ -184,171 +241,172 @@ const DonationsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
   },
   headerBackgroundImage: {
-    width: '100%',
+    width: "100%",
     height: height * 0.25,
-    alignItems: 'center',
+    alignItems: "center",
   },
   headerContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 10,
   },
   logo: {
     width: width * 0.6,
     height: height * 0.12,
     marginTop: height * 0.05,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   disasterImageContainer: {
-    marginLeft: '5%',
-    width: '90%',
-    alignItems: 'center',
+    marginLeft: "5%",
+    width: "90%",
+    alignItems: "center",
     marginTop: -80,
-    paddingVertical: 20,
-    position: 'relative',
+    paddingTop: 20,
+    position: "relative",
   },
   imageWrapper: {
-    width: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   disasterImage: {
-    width: '100%',
+    width: "100%",
     height: 150,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   textOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 10,
   },
   disastersHeaderText: {
     fontSize: width * 0.06,
-    fontWeight: 'bold',
-    color: '#FF9900',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FF9900",
+    textAlign: "center",
   },
   disastersHeaderSubText: {
     fontSize: width * 0.035,
-    color: '#FFF',
-    textAlign: 'center',
+    color: "#FFF",
+    textAlign: "center",
     marginTop: 5,
   },
   scrollViewContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 10,
   },
   formContainer: {
-    width: '90%',
-    alignItems: 'center',
+    width: "90%",
+    alignItems: "center",
   },
   formHeader: {
     fontSize: width * 0.045,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 10,
   },
   amountContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginBottom: 10,
   },
   amountButton: {
-    backgroundColor: '#FF9900',
+    backgroundColor: "#FF9900",
     borderRadius: 20,
     padding: 10,
-    width: '30%',
-    alignItems: 'center',
-    shadowColor: '#000',
+    width: "30%",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   selectedAmountButton: {
-    backgroundColor: '#FF6600',
+    backgroundColor: "#FF6600",
   },
   amountButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   input: {
-    width: '90%',
-    height: 40,
-    borderColor: '#ccc',
+    width: "90%",
+    height: 50,
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 20,
     paddingHorizontal: 10,
     marginVertical: 10,
   },
   donateButton: {
-    backgroundColor: '#FF9900',
+    backgroundColor: "#FF9900",
     borderRadius: 20,
     padding: 10,
-    width: '90%',
-    alignItems: 'center',
+    width: "90%",
+    height: 50,
+    alignItems: "center",
     marginVertical: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
   },
   donateButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   contactText: {
     fontSize: width * 0.035,
-    color: '#333',
-    textAlign: 'center',
+    color: "#333",
+    textAlign: "center",
     marginTop: 20,
   },
   contactLink: {
-    color: '#FF9900',
-    textDecorationLine: 'underline',
+    color: "#FF9900",
+    textDecorationLine: "underline",
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderTopColor: "#ccc",
   },
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   notificationBadge: {
-    position: 'absolute',
+    position: "absolute",
     right: -6,
     top: -5,
-    backgroundColor: 'black',
+    backgroundColor: "black",
     borderRadius: 8,
     padding: 2,
     paddingHorizontal: 5,
   },
   notificationText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
   },
 });
