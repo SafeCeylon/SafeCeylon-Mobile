@@ -101,6 +101,7 @@ const MapPage: React.FC = () => {
         setLocationPickerVisible(false);
         setSelectedLocation(null);
         setSelectedDisaster('');
+        router.push('/home');
       } else {
         Alert.alert('Error', 'An error occurred while submitting the report.');
       }
