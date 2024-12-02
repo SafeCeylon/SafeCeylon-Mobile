@@ -30,7 +30,7 @@ const NotificationPage = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://192.168.1.14:8080/api/users/get-notifications',
+        'http://192.168.1.101:8080/api/users/get-notifications',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const NotificationPage = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       await axios.post(
-        `http://192.168.1.14:8080/api/users/clear-notification`,
+        `http://192.168.1.101:8080/api/users/clear-notification`,
         { notificationId },
         {
           headers: {

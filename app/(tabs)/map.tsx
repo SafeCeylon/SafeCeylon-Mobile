@@ -91,7 +91,7 @@ const MapPage: React.FC = () => {
         latitude: selectedLocation.latitude,
         longitude: selectedLocation.longitude,
       }
-      const response = await axios.post('http://192.168.1.14:8080/api/users/report-disaster', disasterData);
+      const response = await axios.post('http://192.168.1.101:8080/api/users/report-disaster', disasterData);
 
       if (response.status === 200) {
         Alert.alert('Success', 'Disaster report submitted successfully!');
@@ -114,7 +114,7 @@ const MapPage: React.FC = () => {
   useEffect(() => {
     const fetchMapData = async () => {
       try {
-        const response = await axios.get('http://192.168.1.14:8080/api/users/map');
+        const response = await axios.get('http://192.168.1.101:8080/api/users/map');
         if (response.status === 200) {
           const { disasters, hospitals, shelters } = response.data;
           setDisasters(disasters || []);

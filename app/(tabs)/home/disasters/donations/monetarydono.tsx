@@ -70,7 +70,7 @@ const DonationsScreen: React.FC = () => {
       const token = await AsyncStorage.getItem("token");
 
       const response = await axios.post(
-        "http://192.168.1.14:8080/api/users/add-mono-donation",
+        "http://192.168.1.101:8080/api/users/add-mono-donation",
 
         {
           amount,
