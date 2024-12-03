@@ -31,15 +31,24 @@ const ChatScreen: React.FC = () => {
         const token = await AsyncStorage.getItem("token");
         if (token) {
           const response = await axios.get(
-            "http://192.168.1.101:8080/api/messages", // Replace with your API endpoint for messages
+            "http://192.168.1.14:8080/api/users/get-chat",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }
           );
-          setMessages(response.data); // Set messages fetched from the API
-          setLoading(false); // Stop loading once data is fetched
+          console.log("Messages fetched:", response.data);
+    
+          // Map API data to expected structure
+          const formattedMessages = response.data.map((msg: any) => ({
+            id: msg.id,
+            text: msg.message,
+            sender: msg.owner === "DMC_OFFICER" ? "bot" : "user",
+          }));
+    
+          setMessages(formattedMessages);
+          setLoading(false);
         } else {
           Alert.alert("Error", "Token not found. Please log in again.");
         }
@@ -48,6 +57,7 @@ const ChatScreen: React.FC = () => {
         Alert.alert("Error", "An error occurred while fetching messages.");
       }
     };
+    
 
     fetchMessages();
   }, []);
@@ -59,23 +69,35 @@ const ChatScreen: React.FC = () => {
         const token = await AsyncStorage.getItem("token");
         if (token) {
           const newMessage = {
+            id: `temp-${Date.now()}`, // Temporary ID for rendering
             text: inputText,
             sender: "user",
           };
-
+  
+          // Optimistically update the UI
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setInputText(""); // Clear the input field
+  
           // Send new message to the backend
-          await axios.post(
-            "http://192.168.1.101:8080/api/messages", // Replace with your API endpoint to send messages
-            newMessage,
+          const response = await axios.post(
+            "http://192.168.1.14:8080/api/users/send-message",
+            { message: inputText },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }
           );
-
-          setMessages([...messages, newMessage]); // Update UI with new message
-          setInputText(""); // Clear the input field
+  
+          // Update the message ID with the one from the server
+          const savedMessage = {
+            ...newMessage,
+            id: response.data.id, // Replace with server-provided ID
+          };
+  
+          setMessages((prevMessages) =>
+            prevMessages.map((msg) => (msg.id === newMessage.id ? savedMessage : msg))
+          );
         } else {
           Alert.alert("Error", "Token not found. Please log in again.");
         }
@@ -84,7 +106,7 @@ const ChatScreen: React.FC = () => {
         Alert.alert("Error", "An error occurred while sending the message.");
       }
     }
-  };
+  };  
 
   const renderItem = ({ item }) => {
     return (
@@ -122,7 +144,7 @@ const ChatScreen: React.FC = () => {
         <View style={styles.imageWrapper}>
           <Image source={images.disaster} style={styles.disasterImage} />
           <View style={styles.textOverlay}>
-            <Text style={styles.disastersHeaderText}>Support</Text>
+            <Text style={styles.disastersHeaderText}>DMC</Text>
             <Text style={styles.disastersHeaderSubText}>
               Feel free to ask me anything ...
             </Text>
@@ -132,11 +154,11 @@ const ChatScreen: React.FC = () => {
 
       {/* Chat Messages */}
       <FlatList
-        data={messages}
+        data={[...messages].reverse()} // Reverse to show the newest messages at the bottom
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.id || index.toString()}
         contentContainerStyle={styles.messageList}
-        inverted
+        inverted={true} // Optional: If you want the FlatList to handle inversion for better performance
       />
 
       {/* Input Field */}

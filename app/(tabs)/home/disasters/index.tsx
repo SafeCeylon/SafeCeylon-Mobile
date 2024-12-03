@@ -90,7 +90,7 @@ const DisastersScreen: React.FC = () => {
     
         // Fetch disasters
         const response = await axios.get<Disaster[]>(
-          'http://192.168.1.101:8080/api/users/all-disasters',
+          'http://192.168.1.14:8080/api/users/all-disasters',
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ const DisastersScreen: React.FC = () => {
     
         // Fetch user data for home location
         const userDataResponse = await axios.post(
-          'http://192.168.1.101:8080/api/users/userdata',
+          'http://192.168.1.14:8080/api/users/userdata',
           {},
           {
             headers: {
@@ -232,7 +232,7 @@ const DisastersScreen: React.FC = () => {
                             try {
                               const token = await AsyncStorage.getItem("token");
                               await axios.post(
-                                "http://192.168.1.101:8080/api/users/add-victim",
+                                "http://192.168.1.14:8080/api/users/add-victim",
                                 { disasterId: disaster.id },
                                 {
                                   headers: {

@@ -69,7 +69,7 @@ const Weather: React.FC = () => {
 
   const fetchWeatherData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.101:8080/api/users/get-weather');
+      const response = await axios.get('http://192.168.1.14:8080/api/users/get-weather');
       const weatherData = response.data;
       console.log('Fetched Weather Data:', weatherData);
       // Example: If you want to update a state with the fetched data
