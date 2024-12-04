@@ -37,7 +37,7 @@ const ProfilePage = () => {
       console.log('Token retrieved:', token); // Check the value of token
       if (token) {
         const response = await axios.post(
-          'http://192.168.1.14:8080/api/users/userdata',
+          'http://192.168.1.44:8080/api/users/userdata',
           // Send empty body as the token is in the header
           {},
           {
@@ -133,7 +133,7 @@ const ProfilePage = () => {
                     { text: 'Cancel', style: 'cancel' },
                     { text: 'Yes', onPress: async () => {
                         await AsyncStorage.removeItem('token');
-                        await axios.post('http://192.168.1.14:8080/api/users/logout');
+                        await axios.post('http://192.168.1.44:8080/api/users/logout');
                         router.push('/signIn');
                       }
                     },

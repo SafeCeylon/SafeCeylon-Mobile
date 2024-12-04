@@ -31,7 +31,7 @@ const ChatScreen: React.FC = () => {
         const token = await AsyncStorage.getItem("token");
         if (token) {
           const response = await axios.get(
-            "http://192.168.1.14:8080/api/users/get-chat",
+            "http://192.168.1.44:8080/api/users/get-chat",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const ChatScreen: React.FC = () => {
   
           // Send new message to the backend
           const response = await axios.post(
-            "http://192.168.1.14:8080/api/users/send-message",
+            "http://192.168.1.44:8080/api/users/send-message",
             { message: inputText },
             {
               headers: {

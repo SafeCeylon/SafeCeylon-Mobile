@@ -25,7 +25,7 @@ const ForgotPasswordPage = () => {
     }
     try {
       const response = await axios.post(
-        'http://192.168.1.14:8080/api/users/password-reset',
+        'http://192.168.1.44:8080/api/users/password-reset',
         { email }
       );
   

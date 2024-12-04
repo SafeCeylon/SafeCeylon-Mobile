@@ -74,7 +74,7 @@ const DonationsScreen: React.FC = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       await axios.post(
-        "http://192.168.1.14:8080/api/users/add-sup-donation",
+        "http://192.168.1.44:8080/api/users/add-sup-donation",
         {
           supplies: selectedItem === "other" ? otherItem : selectedItem, // Map to 'supplies'
           quantity: amount, // Map to 'quantity'

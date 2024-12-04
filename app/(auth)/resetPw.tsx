@@ -49,7 +49,7 @@ const ResetPasswordPage = () => {
       }
 
       try {
-          await axios.post('http://http://192.168.1.14:8080/api/users/reset-password', {
+          await axios.post('http://http://192.168.1.44:8080/api/users/reset-password', {
               token,
               password,
           });
